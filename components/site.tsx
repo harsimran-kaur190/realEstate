@@ -238,7 +238,7 @@ export function PropertyCard({
       href={`/properties/${p.slug}`}
       className={`property-card block group ${revealClass}`}
     >
-      <div className="relative aspect-[16/9] overflow-hidden bg-[#e8e4dc]">
+      <div className="relative aspect-[16/9] overflow-hidden bg-transparent">
         {/* Shimmer skeleton placeholder */}
         <div
           className={`absolute inset-0 shimmer-placeholder transition-opacity duration-700 pointer-events-none ${
@@ -249,7 +249,7 @@ export function PropertyCard({
           ref={imgRef}
           src={imgSrc}
           alt={p.name}
-          className={`cover property-image transition-all duration-700 ease-out ${
+          className={`absolute inset-0 w-full h-full object-cover property-image transition-all duration-700 ease-out ${
             imgLoaded ? 'opacity-100 filter-none scale-100' : 'opacity-0 blur-[6px] scale-102'
           }`}
           loading={index < 3 ? 'eager' : 'lazy'}
@@ -657,11 +657,11 @@ export function PropertyGallery({
         {/* Main Feature Image */}
         <div
           onClick={() => setLightboxOpen(true)}
-          className="h-[260px] sm:h-[360px] md:h-full relative overflow-hidden bg-[#e8e4dc] shimmer-placeholder group cursor-zoom-in border border-black/5"
+          className="h-[260px] sm:h-[360px] md:h-full relative overflow-hidden bg-transparent group cursor-zoom-in border border-black/5"
         >
           <img
             key={activeIdx}
-            className="cover transition-transform duration-700 ease-out group-hover:scale-103 animate-hero-fade"
+            className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-103 animate-hero-fade"
             src={images[activeIdx]}
             alt={`${title} view`}
             loading="eager"
@@ -683,12 +683,12 @@ export function PropertyGallery({
               <div
                 key={img}
                 onClick={() => setActiveIdx(actualIdx)}
-                className={`relative overflow-hidden cursor-pointer group bg-[#e8e4dc] shimmer-placeholder transition-all duration-300 border border-black/5 ${
+                className={`relative overflow-hidden cursor-pointer group bg-transparent transition-all duration-300 border border-black/5 ${
                   isSelected ? 'ring-2 ring-[#b39062] opacity-100' : 'opacity-85 hover:opacity-100'
                 }`}
               >
                 <img
-                  className="cover transition-transform duration-500 group-hover:scale-105"
+                  className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                   src={img}
                   alt={`${title} view ${actualIdx + 1}`}
                   loading="eager"

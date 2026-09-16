@@ -82,7 +82,16 @@ main {
 
 img, video, canvas, svg {
   max-width: 100%;
+}
+
+img:not([class*="h-"]):not([class*="absolute"]):not(.cover), video, canvas, svg {
   height: auto;
+}
+
+img.object-cover,
+img[class*="object-cover"] {
+  height: 100%;
+  object-fit: cover;
 }
 
 h1, h2, h3, .serif {
@@ -248,7 +257,7 @@ button, .btn { cursor: pointer; }
 .property-card:active {
   transform: translateY(-2px);
 }
-.cover { width: 100%; height: 100%; object-fit: cover; display: block; }
+.cover { width: 100%; height: 100% !important; object-fit: cover; display: block; }
 .property-image {
   transition: transform 0.65s var(--ease-editorial);
 }

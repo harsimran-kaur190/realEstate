@@ -157,10 +157,10 @@ export default function Home() {
                 <ScrollReveal key={name} stagger={(idx % 3) + 1}>
                   <Link
                     href={`/properties?city=${city}`}
-                    className="relative h-40 sm:h-56 overflow-hidden rounded-xl group block border border-black/5 bg-[#ded9cf] shimmer-placeholder"
+                    className="relative h-40 sm:h-56 overflow-hidden rounded-xl group block border border-black/5 bg-transparent"
                   >
                     <img
-                      className="cover group-hover:scale-106 transition-transform duration-700 ease-out"
+                      className="absolute inset-0 w-full h-full object-cover group-hover:scale-106 transition-transform duration-700 ease-out"
                       src={`https://images.unsplash.com/${id}?auto=format&fit=crop&w=900&q=80`}
                       alt={name}
                       loading="lazy"

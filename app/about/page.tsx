@@ -67,9 +67,9 @@ export default function About() {
               Altiere is an independent real-estate brand founded on a simple belief: remarkable property deserves a more considered experience.
             </p>
           </div>
-          <div className="overflow-hidden bg-[#112239] shimmer-placeholder relative min-h-[300px] md:min-h-full">
+          <div className="overflow-hidden bg-[#112239] relative min-h-[300px] md:min-h-full">
             <img
-              className="w-full h-full object-cover animate-hero-fade"
+              className="absolute inset-0 w-full h-full object-cover animate-hero-fade"
               src="https://images.unsplash.com/photo-1600607687920-4e2a09cf159d?auto=format&fit=crop&w=1400&q=85"
               alt="Refined luxury home interior"
               loading="eager"
@@ -173,9 +173,9 @@ export default function About() {
               <ScrollReveal key={person.name} stagger={idx + 1}>
                 <div className="bg-white/80 backdrop-blur-sm border border-stone-200 rounded-xl p-4 sm:p-5 shadow-xs hover:border-[#b39062]/50 hover:shadow-md transition-all duration-300 group flex flex-col h-full">
                   {/* Portrait with identical aspect-[4/5] and gentle slow scale on hover */}
-                  <div className="w-full aspect-[4/5] overflow-hidden rounded-xl bg-stone-100 mb-4 border border-stone-200/50 shimmer-placeholder">
+                  <div className="relative w-full aspect-[4/5] overflow-hidden rounded-xl mb-4 border border-stone-200/50 bg-transparent">
                     <img
-                      className="w-full h-full object-cover object-top grayscale group-hover:grayscale-0 transition-all duration-700 ease-out group-hover:scale-[1.02]"
+                      className="absolute inset-0 w-full h-full object-cover object-top grayscale group-hover:grayscale-0 transition-all duration-700 ease-out group-hover:scale-[1.02]"
                       src={person.image}
                       alt={person.name}
                       loading="lazy"

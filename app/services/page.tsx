@@ -94,7 +94,7 @@ export default function Services() {
           </div>
           <div className="overflow-hidden bg-[#112239] relative min-h-[300px] md:min-h-full">
             <img
-              className="w-full h-full object-cover animate-hero-fade"
+              className="absolute inset-0 w-full h-full object-cover animate-hero-fade"
               src="/images/services-uae-hero.jpg"
               alt="Altiere Estates Real Estate Advisory Penthouse Salon"
               loading="eager"
@@ -114,14 +114,14 @@ export default function Services() {
                 <ScrollReveal key={item.title}>
                   <div className="bg-white border border-stone-200/80 rounded-2xl p-8 lg:p-10 shadow-xs hover:border-[#b39062]/50 hover:shadow-md transition-all duration-300 group">
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
-                      {/* Media Image with Fixed Consistent Aspect Ratio & Full Coverage */}
+                      {/* Media Image with Absolute 100% Full Coverage & No Grey Artifacts */}
                       <div
-                        className={`relative w-full aspect-[16/10] overflow-hidden rounded-xl bg-stone-100 shimmer-placeholder ${
+                        className={`relative w-full aspect-[16/10] overflow-hidden rounded-xl bg-transparent ${
                           i % 2 === 1 ? 'lg:order-2' : 'lg:order-1'
                         }`}
                       >
                         <img
-                          className="w-full h-full !h-full object-cover rounded-xl group-hover:scale-103 transition-transform duration-700 ease-out"
+                          className="absolute inset-0 w-full h-full object-cover rounded-xl group-hover:scale-103 transition-transform duration-700 ease-out"
                           src={item.image}
                           alt={item.title}
                           loading="lazy"

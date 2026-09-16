@@ -179,9 +179,9 @@ export default function PropertiesClient() {
               </div>
             </div>
           </div>
-          <div className="overflow-hidden bg-[#112239] relative min-h-[300px] md:min-h-full shimmer-placeholder">
+          <div className="overflow-hidden bg-[#112239] relative min-h-[300px] md:min-h-full">
             <img
-              className="w-full h-full object-cover animate-hero-fade"
+              className="absolute inset-0 w-full h-full object-cover animate-hero-fade"
               src="/images/collection-uae-hero.jpg"
               alt="Curated UAE luxury properties"
               loading="eager"
