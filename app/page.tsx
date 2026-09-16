@@ -46,7 +46,7 @@ export default function Home() {
       <Navbar />
       <main>
         {/* Compact Premium Hero - Balanced Layout */}
-        <section className="hero-premium-compact">
+        <section className="hero-premium-compact pt-[max(1.5rem,env(safe-area-inset-top))]">
           <div className="shell">
             <div className="hero-compact-grid">
               {/* Left Content Column */}
@@ -76,28 +76,40 @@ export default function Home() {
                 </div>
               </div>
 
-              {/* Right Image Column */}
+              {/* Right Image Column - Featured Property Card */}
               <div className="hero-right-image">
-                <div className="hero-image-frame">
+                <Link
+                  href="/properties/serif-residence-palm"
+                  className="hero-image-frame group block relative overflow-hidden rounded-xl border border-[#E6E1DA] shadow-md transition-all duration-500 hover:shadow-xl hover:border-[#b39062]/50 w-full cursor-pointer"
+                  aria-label="View featured property: The Travertine Pavilion, Emirates Hills, Dubai"
+                >
                   <img
                     src="https://images.unsplash.com/photo-1600566753086-00f18fb6b3ea?auto=format&fit=crop&w=1400&q=90"
-                    alt="Modern luxury villa with contemporary architecture and natural materials"
-                    className="hero-image-asset"
+                    alt="The Travertine Pavilion - Luxury villa in Emirates Hills, Dubai"
+                    className="hero-image-asset w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
                     fetchPriority="high"
                     loading="eager"
                     decoding="async"
                   />
-                  <div className="hero-image-overlay">
-                    <div className="hero-featured-badge">
-                      <p className="badge-meta">FEATURED</p>
-                      <h3 className="badge-title">The Travertine Pavilion</h3>
-                      <p className="badge-location">Emirates Hills, Dubai</p>
-                      <Link href="/properties/serif-residence-palm" className="badge-link">
-                        View Property <ArrowRight size={11} />
-                      </Link>
+                  {/* Polished Dark Scrim Overlay with pointer-events-none */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent pointer-events-none flex flex-col justify-end p-6 sm:p-7 md:p-8">
+                    <div>
+                      <span className="bg-white/20 backdrop-blur-md text-white text-xs px-2.5 py-0.5 rounded-full inline-block mb-2 font-medium tracking-wider border border-white/20">
+                        FEATURED
+                      </span>
+                      <h3 className="serif text-2xl sm:text-3xl text-white font-medium drop-shadow-sm transition-colors group-hover:text-[#d6b98f]">
+                        The Travertine Pavilion
+                      </h3>
+                      <p className="text-white/85 text-xs sm:text-sm mt-1 flex items-center gap-1 font-sans">
+                        Emirates Hills, Dubai
+                      </p>
+                      <span className="inline-flex items-center gap-1.5 text-xs uppercase tracking-[0.14em] font-semibold text-white mt-3.5 group-hover:text-[#d6b98f] transition-colors">
+                        <span>View Property</span>
+                        <ArrowRight size={13} className="transition-transform duration-300 group-hover:translate-x-1" />
+                      </span>
                     </div>
                   </div>
-                </div>
+                </Link>
               </div>
             </div>
           </div>

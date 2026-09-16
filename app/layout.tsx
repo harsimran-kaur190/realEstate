@@ -40,7 +40,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" className="overflow-x-hidden w-full max-w-[100vw]">
-      <body className="overflow-x-hidden w-full max-w-[100vw] min-h-screen relative">
+      <body className="overflow-x-hidden w-full max-w-[100vw] min-h-screen min-h-[100dvh] relative flex flex-col bg-[#f8f6f1]">
         {children}
         <FloatingContactButton />
       </body>

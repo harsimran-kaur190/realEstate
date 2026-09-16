@@ -123,7 +123,7 @@ export function Navbar() {
 
 export function Footer() {
   return (
-    <footer className="bg-[#112239] text-[#e9e4da] pt-16 pb-7">
+    <footer className="bg-[#112239] text-[#e9e4da] pt-16 pb-14 sm:pb-10 relative mt-auto">
       <div className="shell grid grid-cols-1 sm:grid-cols-2 md:grid-cols-[2fr_1fr_1fr_1fr] gap-8 sm:gap-10">
         <div>
           <div className="flex items-center gap-3 mb-5">

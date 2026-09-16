@@ -55,12 +55,21 @@ html {
   background: #B8ADA1;
 }
 
+html {
+  background: linear-gradient(180deg, #f8f6f1 0%, #f8f6f1 60%, #112239 60%, #112239 100%) no-repeat fixed;
+  background-color: #112239;
+}
+
 body {
   margin: 0;
   overflow-x: hidden;
   width: 100%;
   max-width: 100vw;
+  min-height: 100vh;
+  min-height: 100dvh;
   position: relative;
+  display: flex;
+  flex-direction: column;
   background: var(--cream);
   color: var(--ink);
   font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
@@ -77,7 +86,15 @@ main {
   width: 100%;
   max-width: 100vw;
   overflow-x: hidden;
+  flex: 1 0 auto;
   animation: page-enter 0.35s var(--ease-editorial) both;
+}
+
+footer {
+  position: relative;
+  background-color: #112239;
+  margin-top: auto;
+  box-shadow: 0 600px 0 600px #112239;
 }
 
 img, video, canvas, svg {
@@ -133,8 +150,8 @@ button, .btn { cursor: pointer; }
   max-width: 1320px;
   margin: auto;
   width: 100%;
-  padding-left: 1rem;
-  padding-right: 1rem;
+  padding-left: 1.25rem;
+  padding-right: 1.25rem;
 }
 @media (min-width: 640px) {
   .shell {
@@ -262,7 +279,7 @@ button, .btn { cursor: pointer; }
   transition: transform 0.65s var(--ease-editorial);
 }
 .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
-.section { padding: 100px 0; }
+.section { padding-top: 100px; padding-bottom: 100px; }
 .field {
   border: 1px solid #d9d7d1;
   background: #fff;
@@ -307,15 +324,21 @@ button, .btn { cursor: pointer; }
 
 .hero-premium-compact {
   background-color: #f8f6f1;
-  border-bottom: 1px solid #ede9e0;
-  padding: 3.5rem 0;
-  border-bottom: none;
-  padding: 3.5rem 0 1.5rem;
+  padding-top: max(3.5rem, calc(env(safe-area-inset-top) + 2rem));
+  padding-bottom: 1.5rem;
 }
 
 @media (max-width: 1023px) {
   .hero-premium-compact {
-    padding: 2rem 0 2.5rem;
+    padding-top: max(2rem, calc(env(safe-area-inset-top) + 1.5rem));
+    padding-bottom: 2.5rem;
+  }
+}
+
+@media (max-width: 640px) {
+  .hero-premium-compact {
+    padding-top: max(2rem, calc(env(safe-area-inset-top) + 1.5rem));
+    padding-bottom: 1.5rem;
   }
 }
 
@@ -813,7 +836,7 @@ a.search-dock-submit:active {
 
 @media (max-width: 640px) {
   .grid-3 { grid-template-columns: 1fr; gap: 16px; }
-  .section { padding: 48px 0; }
+  .section { padding-top: 48px; padding-bottom: 48px; }
 }
 
 /* Scroll Reveal System */

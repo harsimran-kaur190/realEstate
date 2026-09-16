@@ -83,7 +83,7 @@ export default async function Detail({
         </section>
 
         {/* Main Details & Private Viewing Enquiry */}
-        <section className="shell section !py-10 sm:!py-16">
+        <section className="shell py-10 sm:py-16">
           <div className="grid md:grid-cols-[1.45fr_.75fr] gap-10 md:gap-14 items-stretch">
             <div className="min-w-0">
               <ScrollReveal>

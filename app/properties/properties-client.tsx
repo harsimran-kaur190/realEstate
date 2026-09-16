@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useMemo, useState } from 'react';
+import { createPortal } from 'react-dom';
 import {
   ArrowUpDown,
   Check,
@@ -35,8 +36,25 @@ export default function PropertiesClient() {
   const [sort, setSort] = useState('Featured');
   const [query, setQuery] = useState('');
   const [isTransitioning, setIsTransitioning] = useState(false);
-  const [mobileFilterOpen, setMobileFilterOpen] = useState(false);
+  const [mobileFilterModalOpen, setMobileFilterModalOpen] = useState(false);
   const [mobileSortModalOpen, setMobileSortModalOpen] = useState(false);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  // Lock body scroll when mobile modals are active
+  useEffect(() => {
+    if (mobileFilterModalOpen || mobileSortModalOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [mobileFilterModalOpen, mobileSortModalOpen]);
 
   useEffect(() => {
     const p = new URLSearchParams(window.location.search);
@@ -194,7 +212,7 @@ export default function PropertiesClient() {
 
         {/* Filter & Collection Panel */}
         <section className="shell pt-6 pb-24 md:pb-16">
-          <div className="border border-[#E6E1DA] bg-white p-4 md:p-7 shadow-xs w-full max-w-full overflow-hidden">
+          <div className="border border-[#E6E1DA] bg-white p-4 md:p-7 shadow-xs w-full max-w-full rounded-2xl">
             {/* Desktop Category Tabs */}
             <div className="hidden md:flex gap-6 border-b border-[#E6E1DA] mb-5 overflow-auto">
               {['All', 'Buy', 'Rent', 'Commercial'].map((x) => (
@@ -213,8 +231,8 @@ export default function PropertiesClient() {
               ))}
             </div>
 
-            {/* Mobile Filter UI (Collapsed Single Row + Filter Button + Quick Tags) */}
-            <div className="md:hidden">
+            {/* Mobile Filter UI (Spacious Search + Filter Modal Trigger + Clean Quick Tags) */}
+            <div className="md:hidden space-y-3">
               <div className="flex items-center gap-2">
                 <div className="relative flex-1">
                   <Search
@@ -223,8 +241,8 @@ export default function PropertiesClient() {
                   />
                   <input
                     aria-label="Search properties"
-                    className="w-full bg-white border border-[#E6E1DA] h-[48px] pl-10 pr-9 py-2.5 text-sm text-[#112239] placeholder:text-[#8a959f] focus:outline-none focus:border-[#b39062] focus:ring-1 focus:ring-[#b39062] transition-colors rounded-[2px]"
-                    placeholder="Search properties, areas..."
+                    className="w-full bg-[#faf9f6] border border-[#E6E1DA] h-11 pl-10 pr-9 text-xs sm:text-sm text-[#112239] placeholder:text-[#8a959f] focus:outline-none focus:border-[#b39062] focus:ring-1 focus:ring-[#b39062] transition-colors rounded-xl"
+                    placeholder="Search properties..."
                     value={query}
                     onChange={(e) => triggerTransition(() => setQuery(e.target.value))}
                   />
@@ -232,7 +250,7 @@ export default function PropertiesClient() {
                     <button
                       type="button"
                       onClick={() => triggerTransition(() => setQuery(''))}
-                      className="absolute right-3 top-1/2 -translate-y-1/2 text-[#8a959f] hover:text-[#112239] p-1 cursor-pointer"
+                      className="absolute right-2.5 top-1/2 -translate-y-1/2 text-[#8a959f] hover:text-[#112239] p-1 cursor-pointer"
                       aria-label="Clear search"
                     >
                       <X size={14} />
@@ -242,20 +260,18 @@ export default function PropertiesClient() {
 
                 <button
                   type="button"
-                  onClick={() => setMobileFilterOpen(!mobileFilterOpen)}
-                  className={`h-[48px] px-3.5 border rounded-[2px] text-xs uppercase tracking-[0.14em] font-semibold flex items-center gap-2 transition-all cursor-pointer ${
-                    mobileFilterOpen || activeFilterCount > 0
-                      ? 'bg-[#112239] text-white border-[#112239]'
+                  onClick={() => setMobileFilterModalOpen(true)}
+                  className={`h-11 px-3.5 border rounded-xl text-xs uppercase tracking-[0.12em] font-semibold flex items-center gap-1.5 transition-all cursor-pointer shrink-0 ${
+                    activeFilterCount > 0
+                      ? 'bg-[#112239] text-white border-[#112239] shadow-sm'
                       : 'bg-white text-[#112239] border-[#E6E1DA] hover:border-[#b39062]'
                   }`}
                 >
                   <SlidersHorizontal
                     size={14}
-                    className={
-                      mobileFilterOpen || activeFilterCount > 0 ? 'text-[#d6b98f]' : 'text-[#b39062]'
-                    }
+                    className={activeFilterCount > 0 ? 'text-[#d6b98f]' : 'text-[#b39062]'}
                   />
-                  <span>Filters</span>
+                  <span>Filter</span>
                   {activeFilterCount > 0 && (
                     <span className="w-4 h-4 rounded-full bg-[#b39062] text-white text-[9px] font-bold grid place-items-center">
                       {activeFilterCount}
@@ -264,8 +280,8 @@ export default function PropertiesClient() {
                 </button>
               </div>
 
-              {/* Horizontal Scrollable Row of Quick Filter Tags */}
-              <div className="flex items-center gap-2 overflow-x-auto no-scrollbar pt-3 pb-1 -mx-4 px-4">
+              {/* Horizontal Scrollable Row of Quick Filter Tags (No clipping, smooth scroll) */}
+              <div className="flex items-center gap-2 overflow-x-auto no-scrollbar py-0.5 w-full">
                 {quickTags.map((tag) => {
                   const isActive = isQuickTagActive(tag);
                   return (
@@ -273,7 +289,7 @@ export default function PropertiesClient() {
                       key={tag.label}
                       type="button"
                       onClick={() => handleQuickTagClick(tag)}
-                      className={`shrink-0 px-3.5 py-1.5 text-[11px] uppercase tracking-[0.12em] font-medium rounded-full border transition-all duration-200 cursor-pointer ${
+                      className={`shrink-0 px-3.5 py-1.5 text-xs font-medium rounded-full border transition-all duration-200 cursor-pointer ${
                         isActive
                           ? 'bg-[#112239] text-white border-[#112239] shadow-xs'
                           : 'bg-[#faf9f6] text-[#657080] border-[#E6E1DA] hover:border-[#b39062] hover:text-[#112239]'
@@ -284,79 +300,6 @@ export default function PropertiesClient() {
                   );
                 })}
               </div>
-
-              {/* Expandable Accordion for Secondary Filters */}
-              {mobileFilterOpen && (
-                <div className="mt-4 pt-4 border-t border-[#E6E1DA] grid grid-cols-2 gap-2.5 animate-hero-fade">
-                  <div className="col-span-2 flex gap-1.5 overflow-x-auto pb-1">
-                    {['All', 'Buy', 'Rent', 'Commercial'].map((x) => (
-                      <button
-                        key={x}
-                        type="button"
-                        onClick={() => triggerTransition(() => setPurpose(x))}
-                        className={`flex-1 py-2 text-center text-xs uppercase tracking-[0.12em] font-medium border transition-colors cursor-pointer rounded-[2px] ${
-                          purpose === x
-                            ? 'bg-[#112239] text-white border-[#112239]'
-                            : 'bg-white text-[#657080] border-[#E6E1DA]'
-                        }`}
-                      >
-                        {x}
-                      </button>
-                    ))}
-                  </div>
-
-                  <Filter
-                    val={city}
-                    change={(v) => triggerTransition(() => setCity(v))}
-                    options={['All', 'Dubai', 'Abu Dhabi', 'Sharjah']}
-                    label="Location"
-                  />
-                  <Filter
-                    val={type}
-                    change={(v) => triggerTransition(() => setType(v))}
-                    options={['All', 'Villa', 'Apartment', 'Office']}
-                    label="Property type"
-                  />
-                  <Filter
-                    val={price}
-                    change={(v) => triggerTransition(() => setPrice(v))}
-                    options={['All', 'Under 1m', '1m–5m', '5m+']}
-                    label="Price"
-                  />
-                  <Filter
-                    val={beds}
-                    change={(v) => triggerTransition(() => setBeds(v))}
-                    options={['All', '2+', '3+', '4+']}
-                    label="Bedrooms"
-                  />
-                  <div className="col-span-2">
-                    <Filter
-                      val={sort}
-                      change={(v) => triggerTransition(() => setSort(v))}
-                      options={['Featured', 'Price: low to high', 'Price: high to low']}
-                      label="Sort"
-                    />
-                  </div>
-
-                  <div className="col-span-2 flex items-center justify-between pt-2">
-                    <button
-                      onClick={reset}
-                      type="button"
-                      className="text-xs uppercase tracking-[0.12em] text-[#657080] hover:text-[#112239] inline-flex items-center gap-1.5 cursor-pointer py-2"
-                    >
-                      <RotateCcw size={12} />
-                      <span>Reset all</span>
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => setMobileFilterOpen(false)}
-                      className="btn !py-2.5 !px-5 text-xs"
-                    >
-                      Done ({list.length})
-                    </button>
-                  </div>
-                </div>
-              )}
             </div>
 
             {/* Desktop Filters (Always visible on md+) */}
@@ -461,13 +404,10 @@ export default function PropertiesClient() {
         </section>
 
         {/* Sticky Mobile Filter & Sort Bar */}
-        <div className="fixed bottom-5 left-1/2 -translate-x-1/2 z-40 md:hidden flex items-center bg-[#112239]/95 backdrop-blur-md text-white px-2 py-1.5 rounded-full shadow-2xl border border-white/15 max-w-[calc(100vw-2rem)]">
+        <div className="fixed bottom-[calc(1.25rem+env(safe-area-inset-bottom,0px))] left-1/2 -translate-x-1/2 z-40 md:hidden flex items-center bg-[#112239]/95 backdrop-blur-md text-white px-2 py-1.5 rounded-full shadow-2xl border border-white/15 max-w-[calc(100vw-2rem)]">
           <button
             type="button"
-            onClick={() => {
-              setMobileFilterOpen(true);
-              window.scrollTo({ top: 380, behavior: 'smooth' });
-            }}
+            onClick={() => setMobileFilterModalOpen(true)}
             className="flex items-center gap-2 px-3.5 py-1.5 text-xs uppercase tracking-[0.14em] font-semibold text-white hover:text-[#d6b98f] transition-colors cursor-pointer"
           >
             <SlidersHorizontal size={13} className="text-[#b39062]" />
@@ -489,50 +429,243 @@ export default function PropertiesClient() {
           </button>
         </div>
 
-        {/* Mobile Sort Sheet Modal */}
-        {mobileSortModalOpen && (
-          <div
-            className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-end justify-center md:hidden w-full max-w-[100vw] overflow-x-hidden"
-            onClick={() => setMobileSortModalOpen(false)}
-          >
+        {/* Mobile Filter Sheet Modal */}
+        {mounted &&
+          mobileFilterModalOpen &&
+          createPortal(
             <div
-              className="bg-white w-full max-w-lg rounded-t-2xl p-6 border-t border-[#E6E1DA] shadow-2xl animate-card-entrance overflow-hidden"
-              onClick={(e) => e.stopPropagation()}
+              className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-end justify-center md:hidden w-full max-w-[100vw] overflow-x-hidden animate-fade-in"
+              onClick={() => setMobileFilterModalOpen(false)}
             >
-              <div className="flex items-center justify-between pb-4 border-b border-[#E6E1DA]">
-                <h3 className="serif text-xl text-[#112239]">Sort Properties</h3>
-                <button
-                  type="button"
-                  onClick={() => setMobileSortModalOpen(false)}
-                  className="p-1.5 text-[#657080] hover:text-[#112239] cursor-pointer"
-                  aria-label="Close sort modal"
-                >
-                  <X size={18} />
-                </button>
-              </div>
-              <div className="py-3 space-y-1">
-                {['Featured', 'Price: low to high', 'Price: high to low'].map((opt) => (
+              <div
+                className="bg-white w-full max-w-lg rounded-t-3xl border-t border-[#E6E1DA] shadow-2xl animate-card-entrance flex flex-col max-h-[88vh] overflow-hidden"
+                onClick={(e) => e.stopPropagation()}
+              >
+                {/* Modal Header */}
+                <div className="flex items-center justify-between px-5 py-4 border-b border-[#E6E1DA] shrink-0 bg-white">
+                  <div className="flex items-center gap-2">
+                    <SlidersHorizontal size={16} className="text-[#b39062]" />
+                    <h3 className="serif text-xl text-[#112239]">Filter Properties</h3>
+                    {activeFilterCount > 0 && (
+                      <span className="w-5 h-5 rounded-full bg-[#112239] text-[#d6b98f] text-[10px] font-bold grid place-items-center">
+                        {activeFilterCount}
+                      </span>
+                    )}
+                  </div>
+                  <div className="flex items-center gap-3">
+                    {activeFilterCount > 0 && (
+                      <button
+                        type="button"
+                        onClick={reset}
+                        className="text-xs text-[#657080] hover:text-[#112239] underline underline-offset-2 cursor-pointer font-medium"
+                      >
+                        Clear all
+                      </button>
+                    )}
+                    <button
+                      type="button"
+                      onClick={() => setMobileFilterModalOpen(false)}
+                      className="p-1.5 text-[#657080] hover:text-[#112239] rounded-lg hover:bg-black/5 cursor-pointer"
+                      aria-label="Close filter modal"
+                    >
+                      <X size={18} />
+                    </button>
+                  </div>
+                </div>
+
+                {/* Scrollable Filters Content */}
+                <div className="overflow-y-auto px-5 py-4 space-y-5 flex-1">
+                  {/* Purpose / Status */}
+                  <div>
+                    <span className="block text-[11px] uppercase tracking-[0.14em] text-[#657080] font-semibold mb-2">
+                      Purpose
+                    </span>
+                    <div className="grid grid-cols-4 gap-2">
+                      {['All', 'Buy', 'Rent', 'Commercial'].map((opt) => (
+                        <button
+                          key={opt}
+                          type="button"
+                          onClick={() => triggerTransition(() => setPurpose(opt))}
+                          className={`py-2 text-xs font-medium rounded-xl border text-center transition-all cursor-pointer ${
+                            purpose === opt
+                              ? 'bg-[#112239] text-white border-[#112239] shadow-xs'
+                              : 'bg-[#faf9f6] text-[#657080] border-[#E6E1DA] hover:border-[#b39062]'
+                          }`}
+                        >
+                          {opt}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Location */}
+                  <div>
+                    <span className="block text-[11px] uppercase tracking-[0.14em] text-[#657080] font-semibold mb-2">
+                      Location
+                    </span>
+                    <div className="grid grid-cols-2 gap-2">
+                      {['All', 'Dubai', 'Abu Dhabi', 'Sharjah'].map((opt) => (
+                        <button
+                          key={opt}
+                          type="button"
+                          onClick={() => triggerTransition(() => setCity(opt))}
+                          className={`py-2.5 px-3 text-xs font-medium rounded-xl border text-center transition-all cursor-pointer ${
+                            city === opt
+                              ? 'bg-[#112239] text-white border-[#112239] shadow-xs'
+                              : 'bg-[#faf9f6] text-[#657080] border-[#E6E1DA] hover:border-[#b39062]'
+                          }`}
+                        >
+                          {opt === 'All' ? 'All Locations' : opt}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Property Type */}
+                  <div>
+                    <span className="block text-[11px] uppercase tracking-[0.14em] text-[#657080] font-semibold mb-2">
+                      Property Type
+                    </span>
+                    <div className="grid grid-cols-2 gap-2">
+                      {['All', 'Villa', 'Apartment', 'Office'].map((opt) => (
+                        <button
+                          key={opt}
+                          type="button"
+                          onClick={() => triggerTransition(() => setType(opt))}
+                          className={`py-2.5 px-3 text-xs font-medium rounded-xl border text-center transition-all cursor-pointer ${
+                            type === opt
+                              ? 'bg-[#112239] text-white border-[#112239] shadow-xs'
+                              : 'bg-[#faf9f6] text-[#657080] border-[#E6E1DA] hover:border-[#b39062]'
+                          }`}
+                        >
+                          {opt === 'All' ? 'All Types' : opt}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Price Range */}
+                  <div>
+                    <span className="block text-[11px] uppercase tracking-[0.14em] text-[#657080] font-semibold mb-2">
+                      Price Range
+                    </span>
+                    <div className="grid grid-cols-2 gap-2">
+                      {['All', 'Under 1m', '1m–5m', '5m+'].map((opt) => (
+                        <button
+                          key={opt}
+                          type="button"
+                          onClick={() => triggerTransition(() => setPrice(opt))}
+                          className={`py-2.5 px-3 text-xs font-medium rounded-xl border text-center transition-all cursor-pointer ${
+                            price === opt
+                              ? 'bg-[#112239] text-white border-[#112239] shadow-xs'
+                              : 'bg-[#faf9f6] text-[#657080] border-[#E6E1DA] hover:border-[#b39062]'
+                          }`}
+                        >
+                          {opt === 'All' ? 'Any Price' : opt}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Bedrooms */}
+                  <div>
+                    <span className="block text-[11px] uppercase tracking-[0.14em] text-[#657080] font-semibold mb-2">
+                      Bedrooms
+                    </span>
+                    <div className="grid grid-cols-4 gap-2">
+                      {['All', '2+', '3+', '4+'].map((opt) => (
+                        <button
+                          key={opt}
+                          type="button"
+                          onClick={() => triggerTransition(() => setBeds(opt))}
+                          className={`py-2 text-xs font-medium rounded-xl border text-center transition-all cursor-pointer ${
+                            beds === opt
+                              ? 'bg-[#112239] text-white border-[#112239] shadow-xs'
+                              : 'bg-[#faf9f6] text-[#657080] border-[#E6E1DA] hover:border-[#b39062]'
+                          }`}
+                        >
+                          {opt === 'All' ? 'Any' : `${opt} Beds`}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Sticky Footer */}
+                <div className="p-4 border-t border-[#E6E1DA] bg-white shrink-0 flex items-center gap-3 pb-[calc(1rem+env(safe-area-inset-bottom,0px))]">
                   <button
-                    key={opt}
                     type="button"
-                    onClick={() => {
-                      triggerTransition(() => setSort(opt));
-                      setMobileSortModalOpen(false);
-                    }}
-                    className={`w-full text-left py-3 px-3 flex items-center justify-between text-sm transition-colors cursor-pointer rounded-[2px] ${
-                      sort === opt
-                        ? 'bg-[#112239]/5 font-semibold text-[#112239]'
-                        : 'text-[#657080] hover:bg-black/5'
-                    }`}
+                    onClick={reset}
+                    className="px-4 py-3 border border-[#E6E1DA] text-xs font-semibold uppercase tracking-[0.12em] text-[#657080] hover:text-[#112239] rounded-xl flex items-center gap-1.5 cursor-pointer shrink-0"
                   >
-                    <span>{opt}</span>
-                    {sort === opt && <Check size={16} className="text-[#b39062]" />}
+                    <RotateCcw size={13} />
+                    <span>Reset</span>
                   </button>
-                ))}
+                  <button
+                    type="button"
+                    onClick={() => setMobileFilterModalOpen(false)}
+                    className="flex-1 py-3 px-4 bg-[#112239] hover:bg-[#1a3354] text-white text-xs font-semibold uppercase tracking-[0.14em] rounded-xl shadow-md transition-all text-center flex items-center justify-center gap-2 cursor-pointer"
+                  >
+                    <span>
+                      Show {list.length} {list.length === 1 ? 'Property' : 'Properties'}
+                    </span>
+                  </button>
+                </div>
               </div>
-            </div>
-          </div>
-        )}
+            </div>,
+            document.body
+          )}
+
+        {/* Mobile Sort Sheet Modal */}
+        {mounted &&
+          mobileSortModalOpen &&
+          createPortal(
+            <div
+              className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-end justify-center md:hidden w-full max-w-[100vw] overflow-x-hidden animate-fade-in"
+              onClick={() => setMobileSortModalOpen(false)}
+            >
+              <div
+                className="bg-white w-full max-w-lg rounded-t-3xl p-6 border-t border-[#E6E1DA] shadow-2xl animate-card-entrance overflow-hidden pb-[calc(1.5rem+env(safe-area-inset-bottom,0px))]"
+                onClick={(e) => e.stopPropagation()}
+              >
+                <div className="flex items-center justify-between pb-4 border-b border-[#E6E1DA]">
+                  <div className="flex items-center gap-2">
+                    <ArrowUpDown size={16} className="text-[#b39062]" />
+                    <h3 className="serif text-xl text-[#112239]">Sort Properties</h3>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setMobileSortModalOpen(false)}
+                    className="p-1.5 text-[#657080] hover:text-[#112239] rounded-lg hover:bg-black/5 cursor-pointer"
+                    aria-label="Close sort modal"
+                  >
+                    <X size={18} />
+                  </button>
+                </div>
+                <div className="py-3 space-y-1.5">
+                  {['Featured', 'Price: low to high', 'Price: high to low'].map((opt) => (
+                    <button
+                      key={opt}
+                      type="button"
+                      onClick={() => {
+                        triggerTransition(() => setSort(opt));
+                        setMobileSortModalOpen(false);
+                      }}
+                      className={`w-full text-left py-3 px-3.5 flex items-center justify-between text-sm transition-all cursor-pointer rounded-xl ${
+                        sort === opt
+                          ? 'bg-[#112239] text-white font-medium shadow-xs'
+                          : 'text-[#657080] hover:bg-black/5'
+                      }`}
+                    >
+                      <span>{opt}</span>
+                      {sort === opt && <Check size={16} className="text-[#d6b98f]" />}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </div>,
+            document.body
+          )}
       </main>
       <Footer />
     </>
