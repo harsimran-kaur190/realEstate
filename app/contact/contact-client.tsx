@@ -53,14 +53,14 @@ export default function ContactClient() {
     setModalOpen(false);
   };
 
-  const FormFields = () => (
+  const formFields = (
     <>
       <div className="grid md:grid-cols-2 gap-4">
         <input
           required
           value={name}
           onChange={(e) => setName(e.target.value)}
-          className="w-full bg-white border border-[#E6E1DA] h-[48px] px-4 py-3 text-sm text-[#112239] placeholder:text-[#8a959f] focus:outline-none focus:border-[#b39062] focus:ring-1 focus:ring-[#b39062] transition-colors rounded-[2px]"
+          className="w-full bg-white border border-[#E8E2D9] h-[48px] px-4 py-3 text-sm text-[#0D1726] placeholder:text-[#7E8896] focus:outline-none focus:border-[#8C7350] focus:ring-1 focus:ring-[#8C7350] transition-colors rounded-[2px]"
           placeholder="Your name"
         />
         <input
@@ -68,35 +68,35 @@ export default function ContactClient() {
           type="email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
-          className="w-full bg-white border border-[#E6E1DA] h-[48px] px-4 py-3 text-sm text-[#112239] placeholder:text-[#8a959f] focus:outline-none focus:border-[#b39062] focus:ring-1 focus:ring-[#b39062] transition-colors rounded-[2px]"
+          className="w-full bg-white border border-[#E8E2D9] h-[48px] px-4 py-3 text-sm text-[#0D1726] placeholder:text-[#7E8896] focus:outline-none focus:border-[#8C7350] focus:ring-1 focus:ring-[#8C7350] transition-colors rounded-[2px]"
           placeholder="Email address"
         />
       </div>
       <input
         value={phone}
         onChange={(e) => setPhone(e.target.value)}
-        className="w-full bg-white border border-[#E6E1DA] h-[48px] px-4 py-3 text-sm text-[#112239] placeholder:text-[#8a959f] focus:outline-none focus:border-[#b39062] focus:ring-1 focus:ring-[#b39062] transition-colors rounded-[2px]"
+        className="w-full bg-white border border-[#E8E2D9] h-[48px] px-4 py-3 text-sm text-[#0D1726] placeholder:text-[#7E8896] focus:outline-none focus:border-[#8C7350] focus:ring-1 focus:ring-[#8C7350] transition-colors rounded-[2px]"
         placeholder="Phone number"
       />
       <div className="relative">
         <select
-          className={`w-full appearance-none bg-white border border-[#E6E1DA] h-[48px] px-4 pr-11 py-3 text-sm focus:outline-none focus:border-[#b39062] focus:ring-1 focus:ring-[#b39062] transition-colors cursor-pointer rounded-[2px] ${
-            enquiryType ? 'text-[#112239]' : 'text-[#8a959f]'
+          className={`w-full appearance-none bg-white border border-[#E8E2D9] h-[48px] px-4 pr-11 py-3 text-sm focus:outline-none focus:border-[#8C7350] focus:ring-1 focus:ring-[#8C7350] transition-colors cursor-pointer rounded-[2px] ${
+            enquiryType ? 'text-[#0D1726]' : 'text-[#7E8896]'
           }`}
           value={enquiryType}
           onChange={(e) => setEnquiryType(e.target.value)}
         >
-          <option value="" disabled className="text-[#8a959f]">
+          <option value="" disabled className="text-[#7E8896]">
             Enquiry type
           </option>
-          <option value="Buying a property" className="text-[#112239]">Buying a property</option>
-          <option value="Selling a property" className="text-[#112239]">Selling a property</option>
-          <option value="Leasing" className="text-[#112239]">Leasing</option>
-          <option value="Property management" className="text-[#112239]">Property management</option>
+          <option value="Buying a property" className="text-[#0D1726]">Buying a property</option>
+          <option value="Selling a property" className="text-[#0D1726]">Selling a property</option>
+          <option value="Leasing" className="text-[#0D1726]">Leasing</option>
+          <option value="Property management" className="text-[#0D1726]">Property management</option>
         </select>
         <ChevronDown
           size={16}
-          className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-[#8a959f]"
+          className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-[#7E8896]"
           strokeWidth={1.75}
         />
       </div>
@@ -104,14 +104,14 @@ export default function ContactClient() {
         required
         value={message}
         onChange={(e) => setMessage(e.target.value)}
-        className="w-full bg-white border border-[#E6E1DA] px-4 py-3 text-sm text-[#112239] placeholder:text-[#8a959f] focus:outline-none focus:border-[#b39062] focus:ring-1 focus:ring-[#b39062] transition-colors h-32 sm:h-36 resize-none rounded-[2px]"
+        className="w-full bg-white border border-[#E8E2D9] px-4 py-3 text-sm text-[#0D1726] placeholder:text-[#7E8896] focus:outline-none focus:border-[#8C7350] focus:ring-1 focus:ring-[#8C7350] transition-colors h-32 sm:h-36 resize-none rounded-[2px]"
         placeholder="Tell us a little about your plans"
       />
       <button className="btn w-full group mt-2 cursor-pointer" type="submit">
         <span>Send enquiry</span>
         <Send size={14} className="transition-transform duration-300 group-hover:translate-x-1" />
       </button>
-      <p className="text-[11px] text-[#657080] text-center">
+      <p className="text-[11px] text-[#5C6878] text-center">
         This form is a UI demonstration and does not submit personal data.
       </p>
     </>
@@ -126,11 +126,11 @@ export default function ContactClient() {
             <ScrollReveal>
               <div>
                 <p className="eyebrow">Start a conversation</p>
-                <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl mt-2 text-[#112239] break-words">
+                <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl mt-2 text-[#0D1726] break-words">
                   Make your next move remarkable.
                 </h1>
-                <p className="text-[#657080] leading-7 mt-4 sm:mt-6 max-w-md text-sm sm:text-base">
-                  Whether you are buying, selling, leasing or investing, our advisors would be pleased to hear from you.
+                <p className="text-[#5C6878] leading-7 mt-4 sm:mt-6 max-w-md text-sm sm:text-base">
+                  Whether you are buying, selling, leasing or caring for a property you already own, we would be pleased to hear from you.
                 </p>
 
                 {/* Mobile Fast-Action Buttons (No Scrolling Needed) */}
@@ -138,16 +138,16 @@ export default function ContactClient() {
                   <button
                     type="button"
                     onClick={() => setModalOpen(true)}
-                    className="btn !py-3.5 !px-6 text-xs uppercase tracking-[0.14em] flex items-center justify-center gap-2 shadow-md cursor-pointer w-full"
+                    className="btn !py-3.5 !px-6 text-xs uppercase tracking-[0.14em] flex items-center justify-center gap-2 cursor-pointer w-full"
                   >
-                    <Send size={14} className="text-[#b39062]" />
+                    <Send size={14} className="text-[#8C7350]" />
                     <span>Send an enquiry</span>
                   </button>
                   <a
                     href="https://wa.me/97145550182?text=Hello%20Altiere%20Estates,%20I%20would%20like%20to%20enquire%20about%20a%20property."
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center justify-center gap-2.5 px-6 py-3.5 bg-white border border-[#E6E1DA] hover:border-[#b39062] hover:bg-[#faf8f5] text-[#112239] text-xs uppercase tracking-[0.14em] font-semibold transition-all duration-200 hover:-translate-y-0.5 hover:shadow-sm group cursor-pointer w-full rounded-xs"
+                    className="inline-flex items-center justify-center gap-2.5 px-6 py-3.5 bg-white border border-[#E8E2D9] hover:border-[#8C7350] hover:bg-[#faf8f5] text-[#0D1726] text-xs uppercase tracking-[0.14em] font-semibold transition-all duration-200 group cursor-pointer w-full rounded-[2px]"
                   >
                     <MessageCircle size={16} className="text-[#25D366] transition-transform duration-300 group-hover:scale-110" />
                     <span>WhatsApp us</span>
@@ -156,23 +156,25 @@ export default function ContactClient() {
 
                 <div className="mt-8 sm:mt-12 space-y-7 sm:space-y-10">
                   {[
-                    [MapPin, 'Visit us', 'Al Saqr Business Tower, Sheikh Zayed Road, Dubai'],
-                    [Phone, 'Call us', '+971 4 555 0182'],
-                    [Mail, 'Email us', 'hello@altiere-estates.ae'],
-                  ].map(([Icon, t, d]) => {
+                    [MapPin, 'Visit us', 'Al Saqr Business Tower, Sheikh Zayed Road, Dubai', null],
+                    [Phone, 'Call us', '+971 4 555 0182', 'tel:+97145550182'],
+                    [Mail, 'Email us', 'hello@altiere-estates.ae', 'mailto:hello@altiere-estates.ae'],
+                  ].map(([Icon, t, d, href]) => {
                     const I = Icon as typeof MapPin;
                     return (
-                      <div className="flex gap-4 group cursor-pointer" key={String(t)}>
-                        <div className="transition-transform duration-300 group-hover:scale-110">
-                          <I color="#b39062" />
-                        </div>
+                      <div className="flex gap-4" key={String(t)}>
+                        <I size={20} strokeWidth={1.5} className="text-[#8C7350] shrink-0 mt-0.5" aria-hidden="true" />
                         <div>
-                          <p className="text-xs uppercase tracking-[.13em] text-[#112239] font-medium">
+                          <p className="text-[10.5px] uppercase tracking-[.18em] text-[#7E8896] font-medium">
                             {String(t)}
                           </p>
-                          <p className="text-sm text-[#657080] mt-1 group-hover:text-[#b39062] transition-colors">
-                            {String(d)}
-                          </p>
+                          {href ? (
+                            <a href={String(href)} className="block text-sm text-[#0D1726] mt-1 hover:text-[#8C7350] transition-colors">
+                              {String(d)}
+                            </a>
+                          ) : (
+                            <p className="text-sm text-[#0D1726] mt-1">{String(d)}</p>
+                          )}
                         </div>
                       </div>
                     );
@@ -185,7 +187,7 @@ export default function ContactClient() {
                     href="https://wa.me/97145550182?text=Hello%20Altiere%20Estates,%20I%20would%20like%20to%20enquire%20about%20a%20property."
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center justify-center gap-2.5 px-6 py-3.5 bg-white border border-[#E6E1DA] hover:border-[#b39062] hover:bg-[#faf8f5] text-[#112239] text-xs uppercase tracking-[0.14em] font-semibold transition-all duration-200 hover:-translate-y-0.5 hover:shadow-sm group cursor-pointer rounded-xs"
+                    className="inline-flex items-center justify-center gap-2.5 px-6 py-3.5 bg-white border border-[#E8E2D9] hover:border-[#8C7350] hover:bg-[#faf8f5] text-[#0D1726] text-xs uppercase tracking-[0.14em] font-semibold transition-all duration-200 group cursor-pointer rounded-[2px]"
                   >
                     <MessageCircle size={16} className="text-[#25D366] transition-transform duration-300 group-hover:scale-110" />
                     <span>WhatsApp us</span>
@@ -196,16 +198,16 @@ export default function ContactClient() {
 
             {/* Desktop / Inline Form Card */}
             <ScrollReveal stagger={2}>
-              <div className="bg-white border border-[#E6E1DA] p-6 sm:p-7 md:p-10 shadow-lg shadow-black/5 transition-shadow duration-300 hover:shadow-xl rounded-2xl">
-                <p className="serif text-3xl text-[#112239]">How can we help?</p>
+              <div className="bg-white border border-[#E8E2D9] p-6 sm:p-7 md:p-10 ">
+                <h2 className="serif text-3xl text-[#0D1726]">How can we help?</h2>
                 {sent ? (
-                  <div className="py-12 sm:py-20 text-center animate-hero-fade">
-                    <div className="w-16 h-16 rounded-full bg-[#b39062]/10 text-[#b39062] grid place-items-center mx-auto mb-4">
+                  <div className="py-12 sm:py-20 text-center animate-fade-in">
+                    <div className="w-16 h-16 rounded-full bg-[#8C7350]/10 text-[#8C7350] grid place-items-center mx-auto mb-4">
                       <CheckCircle2 size={36} />
                     </div>
-                    <p className="serif text-3xl text-[#112239]">Thank you.</p>
-                    <p className="text-[#657080] mt-2 max-w-sm mx-auto text-sm leading-relaxed">
-                      Your enquiry has been received. Our senior property advisor will reach out to you shortly.
+                    <p className="serif text-3xl text-[#0D1726]" role="status">Thank you.</p>
+                    <p className="text-[#5C6878] mt-2 max-w-sm mx-auto text-sm leading-relaxed">
+                      Your enquiry has been received. A member of our advisory team will be in touch shortly.
                     </p>
                     <button
                       type="button"
@@ -217,7 +219,7 @@ export default function ContactClient() {
                   </div>
                 ) : (
                   <form className="mt-7 grid gap-4" onSubmit={handleSubmit}>
-                    <FormFields />
+                    {formFields}
                   </form>
                 )}
               </div>
@@ -226,13 +228,13 @@ export default function ContactClient() {
         </section>
 
         {/* Sticky Mobile Quick Action Bar (Bottom Pill) */}
-        <div className="fixed bottom-5 left-1/2 -translate-x-1/2 z-40 md:hidden flex items-center gap-2 bg-[#112239]/95 backdrop-blur-md text-white px-3.5 py-2 rounded-full shadow-2xl border border-white/15 max-w-[calc(100vw-2rem)] animate-hero-fade">
+        <div className="fixed bottom-5 left-1/2 -translate-x-1/2 z-40 md:hidden flex items-center gap-2 bg-[#0D1726]/95 backdrop-blur-md text-white px-3.5 py-2 rounded-full shadow-2xl border border-white/15 max-w-[calc(100vw-2rem)] animate-fade-in">
           <button
             type="button"
             onClick={() => setModalOpen(true)}
-            className="flex items-center gap-2 px-3 py-1 text-xs uppercase tracking-[0.14em] font-semibold text-white hover:text-[#d6b98f] transition-colors cursor-pointer"
+            className="flex items-center gap-2 px-3 py-1 text-xs uppercase tracking-[0.14em] font-semibold text-white hover:text-[#D6B98F] transition-colors cursor-pointer"
           >
-            <Send size={13} className="text-[#b39062]" />
+            <Send size={13} className="text-[#8C7350]" />
             <span>Enquire now</span>
           </button>
           <span className="w-px h-4 bg-white/20" />
@@ -252,11 +254,11 @@ export default function ContactClient() {
           typeof document !== 'undefined' &&
           createPortal(
             <div
-              className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-end sm:items-center justify-center p-0 sm:p-4 overflow-y-auto animate-hero-fade"
+              className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-end sm:items-center justify-center p-0 sm:p-4 overflow-y-auto animate-fade-in"
               onClick={() => setModalOpen(false)}
             >
               <div
-                className="bg-white w-full sm:max-w-lg rounded-t-3xl sm:rounded-2xl p-6 sm:p-8 border-t sm:border border-[#E6E1DA] shadow-2xl relative max-h-[92vh] overflow-y-auto animate-card-entrance"
+                className="bg-white w-full sm:max-w-lg  p-6 sm:p-8 border-t sm:border border-[#E8E2D9] shadow-2xl relative max-h-[92vh] overflow-y-auto animate-fade-in"
                 onClick={(e) => e.stopPropagation()}
               >
                 {/* Close Button */}
@@ -270,13 +272,13 @@ export default function ContactClient() {
                 </button>
 
                 {sent ? (
-                  <div className="py-10 text-center animate-hero-fade">
-                    <div className="w-16 h-16 rounded-full bg-[#b39062]/10 text-[#b39062] grid place-items-center mx-auto mb-4">
+                  <div className="py-10 text-center animate-fade-in">
+                    <div className="w-16 h-16 rounded-full bg-[#8C7350]/10 text-[#8C7350] grid place-items-center mx-auto mb-4">
                       <CheckCircle2 size={36} />
                     </div>
-                    <h3 className="serif text-3xl text-[#112239]">Thank you.</h3>
-                    <p className="text-[#657080] mt-2 text-sm leading-relaxed max-w-xs mx-auto">
-                      Your enquiry has been received. Our senior property advisor will reach out to you shortly.
+                    <h3 className="serif text-3xl text-[#0D1726]">Thank you.</h3>
+                    <p className="text-[#5C6878] mt-2 text-sm leading-relaxed max-w-xs mx-auto">
+                      Your enquiry has been received. A member of our advisory team will be in touch shortly.
                     </p>
                     <div className="mt-6 flex justify-center gap-3">
                       <button
@@ -290,11 +292,11 @@ export default function ContactClient() {
                   </div>
                 ) : (
                   <div>
-                    <div className="flex items-center gap-2 mb-1.5 text-[#b39062]">
-                      <span className="w-1.5 h-1.5 rounded-full bg-[#b39062]" />
+                    <div className="flex items-center gap-2 mb-1.5 text-[#8C7350]">
+                      <span className="w-1.5 h-1.5 rounded-full bg-[#8C7350]" />
                       <span className="text-[10px] uppercase tracking-[0.2em] font-semibold">Start a conversation</span>
                     </div>
-                    <h3 className="serif text-2xl sm:text-3xl text-[#112239] font-medium">
+                    <h3 className="serif text-2xl sm:text-3xl text-[#0D1726] font-medium">
                       How can we help?
                     </h3>
                     <p className="text-xs text-stone-500 mt-1 mb-5">
@@ -302,7 +304,7 @@ export default function ContactClient() {
                     </p>
 
                     <form className="grid gap-3.5" onSubmit={handleSubmit}>
-                      <FormFields />
+                      {formFields}
                     </form>
                   </div>
                 )}

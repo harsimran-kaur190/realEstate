@@ -1,5 +1,8 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
+import Image from 'next/image';
+import { ArrowRight } from 'lucide-react';
+import { Footer, Navbar, ScrollReveal } from '@/components/site';
 
 export const metadata: Metadata = {
   title: 'Private Advisory & Client Services',
@@ -11,51 +14,66 @@ export const metadata: Metadata = {
       'Bespoke real estate services including private sales, acquisitions, leasing, and asset management.',
   },
 };
-import {
-  ArrowRight,
-  BarChart3,
-  Building2,
-  Home,
-  KeyRound,
-  Landmark,
-} from 'lucide-react';
-import { Footer, Navbar, ScrollReveal } from '@/components/site';
 
-const services = [
+/*
+ * Service areas — drawn from the practice areas the site already offered
+ * (private sales, leasing, management, commercial, investment advisory),
+ * reframed as stages of ownership. Nothing here promises outcomes.
+ */
+const SERVICES = [
   {
-    title: 'Private Sales',
-    desc: 'A strategic, human approach to marketing and transacting exceptional homes across the UAE.',
-    benefits: ['Discreet off-market positioning', 'Qualified global buyer network', 'Executive negotiation expertise'],
-    icon: Home,
+    index: '01',
+    title: 'Property Acquisition',
+    copy: 'A focused search and advisory process for distinctive residential and commercial opportunities.',
+    includes: ['Discreet off-market positioning', 'Qualified buyer introductions', 'Considered negotiation'],
     image: '/images/hero-uae-villa.jpg',
+    alt: 'A contemporary travertine villa with a reflecting pool at golden hour',
+    ratio: 'portrait',
   },
   {
-    title: 'Property Leasing',
-    desc: 'Connecting premier residences with vetted tenants through tailored leasing strategies and seamless handovers.',
-    benefits: ['Comprehensive tenant screening', 'Market-calibrated rental pricing', 'End-to-end lease administration'],
-    icon: KeyRound,
-    image: 'https://images.unsplash.com/photo-1600585152915-d208bec867a1?auto=format&fit=crop&w=1200&q=85',
+    index: '02',
+    title: 'Private Viewings',
+    copy: 'A composed viewing experience built around your priorities and schedule.',
+    includes: ['Appointments arranged around you', 'Accompanied by your advisor', 'Full property context in advance'],
+    image: '/images/services-uae-hero.jpg',
+    alt: 'A double-height penthouse salon looking out over the Arabian Gulf towards the Burj Al Arab',
+    ratio: 'wide',
   },
   {
+    index: '03',
+    title: 'Property Advisory',
+    copy: 'Clear guidance through evaluation, negotiation and acquisition.',
+    includes: ['Market context and comparables', 'Structured evaluation of each option', 'Support through to completion'],
+    image: 'https://images.unsplash.com/photo-1615747476328-41153cf6da54?auto=format&fit=crop&w=1400&q=80',
+    alt: 'Sculptural white arches at Dubai Creek Harbour framing the Downtown skyline',
+    ratio: 'portrait',
+  },
+  {
+    index: '04',
     title: 'Property Management',
-    desc: 'Attentive, institutional-grade property stewardship that preserves asset value and frees your time.',
-    benefits: ['Proactive maintenance oversight', 'Institutional financial reporting', 'Dedicated tenant relationship lead'],
-    icon: Building2,
-    image: 'https://images.unsplash.com/photo-1600566753086-00f18fb6b3ea?auto=format&fit=crop&w=1200&q=85',
+    copy: 'Ongoing oversight for owners who value consistency and peace of mind.',
+    includes: ['Proactive maintenance coordination', 'Tenant relations and occupancy oversight', 'Straightforward owner reporting'],
+    image: 'https://images.unsplash.com/photo-1600585154526-990dced4db0d?auto=format&fit=crop&w=1400&q=80',
+    alt: 'A contemporary residence at dusk with a lit timber entrance and dark cladding',
+    ratio: 'tall',
   },
   {
-    title: 'Commercial Real Estate',
-    desc: 'Workspaces, boutique headquarters, and commercial investments positioned for sustainable yield.',
-    benefits: ['Prime office & retail advisory', 'Lease acquisition & restructuring', 'Corporate portfolio representation'],
-    icon: Landmark,
-    image: 'https://images.unsplash.com/photo-1497366811353-6870744d04b2?auto=format&fit=crop&w=1200&q=85',
+    index: '05',
+    title: 'Leasing & Commercial',
+    copy: 'Tailored leasing for residences, and considered representation for workspaces and commercial addresses.',
+    includes: ['Tenant screening and lease administration', 'Office and retail advisory', 'Corporate portfolio representation'],
+    image: 'https://images.unsplash.com/photo-1497366811353-6870744d04b2?auto=format&fit=crop&w=1400&q=80',
+    alt: 'A light-filled meeting room with a long timber table and floor-to-ceiling glazing',
+    ratio: 'wide',
   },
   {
-    title: 'Investment Advisory',
-    desc: 'Actionable market intelligence and strategic advisory for private wealth and institutional capital.',
-    benefits: ['Predictive capital appreciation analysis', 'Prime waterfront & urban yield studies', 'Confidential acquisition support'],
-    icon: BarChart3,
-    image: 'https://images.unsplash.com/photo-1512453979798-5ea266f8880c?auto=format&fit=crop&w=1200&q=85',
+    index: '06',
+    title: 'Asset Support',
+    copy: 'Market context and considered analysis to inform acquisition and ownership decisions, without promises about outcomes.',
+    includes: ['Area and market briefings', 'Confidential acquisition support', 'Portfolio review on request'],
+    image: 'https://images.unsplash.com/photo-1611577810610-642f8ac05c32?auto=format&fit=crop&w=1400&q=80',
+    alt: 'Dubai Marina towers seen from the water in late afternoon light',
+    ratio: 'portrait',
   },
 ];
 
@@ -63,113 +81,116 @@ export default function Services() {
   return (
     <>
       <Navbar />
-      <main>
-        {/* Header Hero - Full-bleed 50/50 split matching About and Properties pages */}
-        <section className="grid md:grid-cols-2 min-h-[420px] lg:min-h-[480px] border-b border-[#20344d] w-full max-w-full overflow-hidden">
-          <div className="bg-[#112239] text-white p-6 sm:p-8 md:p-10 lg:p-14 flex flex-col justify-center">
-            <div className="flex items-center gap-2 text-xs uppercase tracking-[0.2em] text-[#d6b98f] font-semibold animate-hero-fade">
-              <span className="w-1.5 h-1.5 bg-[#d6b98f] rounded-full inline-block" />
-              <span>Our expertise</span>
+      <main className="sv">
+        {/* Introduction */}
+        <section className="sv-intro" aria-labelledby="services-heading">
+          <div className="shell sv-intro__grid">
+            <div className="sv-intro__lead">
+              <p className="eyebrow animate-hero-reveal">Private Property Services</p>
+              <h1 id="services-heading" className="sv-intro__title animate-hero-reveal delay-1">
+                Guidance at every stage of <em>ownership.</em>
+              </h1>
             </div>
-            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl mt-3 sm:mt-4 animate-hero-fade delay-1 serif leading-[1.15] break-words">
-              Thoughtful guidance at every turn.
-            </h1>
-            <p className="text-[#c3ccd5] leading-7 mt-4 sm:mt-5 max-w-lg text-sm md:text-base animate-hero-fade delay-2">
-              A full suite of real-estate services shaped around your ambitions and the standards your property deserves.
-            </p>
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6 pt-6 mt-6 sm:mt-8 border-t border-white/15 text-xs animate-hero-fade delay-3">
-              <div>
-                <strong className="block text-white font-medium text-base">Advisory</strong>
-                <span className="text-[#bfc7d0] text-[11px] uppercase tracking-wider">End-to-End</span>
-              </div>
-              <div>
-                <strong className="block text-white font-medium text-base">Institutional</strong>
-                <span className="text-[#bfc7d0] text-[11px] uppercase tracking-wider">Asset Standards</span>
-              </div>
-              <div>
-                <strong className="block text-white font-medium text-base">Discreet</strong>
-                <span className="text-[#bfc7d0] text-[11px] uppercase tracking-wider">Private Client</span>
-              </div>
+            <div className="sv-intro__aside animate-hero-reveal delay-2">
+              <p className="sv-intro__copy">
+                From finding the right property to caring for an existing asset, Altiere Estates
+                provides a considered approach to the UAE property journey.
+              </p>
+              <ol className="sv-intro__index" aria-label="Service areas">
+                {SERVICES.map((s) => (
+                  <li key={s.index}>
+                    <a href={`#service-${s.index}`} className="sv-intro__index-link">
+                      <span className="sv-intro__index-num">{s.index}</span>
+                      <span>{s.title}</span>
+                    </a>
+                  </li>
+                ))}
+              </ol>
             </div>
-          </div>
-          <div className="overflow-hidden bg-[#112239] relative min-h-[300px] md:min-h-full">
-            <img
-              className="absolute inset-0 w-full h-full object-cover animate-hero-fade"
-              src="/images/services-uae-hero.jpg"
-              alt="Altiere Estates Real Estate Advisory Penthouse Salon"
-              loading="eager"
-              fetchPriority="high"
-              decoding="async"
-            />
-            <div className="absolute inset-0 bg-gradient-to-t md:bg-gradient-to-l from-transparent to-[#112239]/20 pointer-events-none" />
           </div>
         </section>
 
-        {/* Services Collection */}
-        <section className="shell py-12 md:py-16">
-          <div className="space-y-6 md:space-y-8">
-            {services.map((item, i) => {
-              const Icon = item.icon;
-              return (
-                <ScrollReveal key={item.title}>
-                  <div className="bg-white border border-stone-200/80 rounded-2xl p-8 lg:p-10 shadow-xs hover:border-[#b39062]/50 hover:shadow-md transition-all duration-300 group">
-                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
-                      {/* Media Image with Absolute 100% Full Coverage & No Grey Artifacts */}
-                      <div
-                        className={`relative w-full aspect-[16/10] overflow-hidden rounded-xl bg-transparent ${
-                          i % 2 === 1 ? 'lg:order-2' : 'lg:order-1'
-                        }`}
-                      >
-                        <img
-                          className="absolute inset-0 w-full h-full object-cover rounded-xl group-hover:scale-103 transition-transform duration-700 ease-out"
-                          src={item.image}
-                          alt={item.title}
-                          loading="lazy"
-                        />
-                      </div>
-
-                      {/* Content Details */}
-                      <div className={`flex flex-col justify-center ${i % 2 === 1 ? 'lg:order-1' : 'lg:order-2'}`}>
-                        <div className="flex items-center gap-3">
-                          <span className="h-7 w-7 rounded-md bg-[#112239]/5 text-[#b39062] flex items-center justify-center">
-                            <Icon size={16} />
-                          </span>
-                          <span className="eyebrow text-[10px] tracking-[0.2em] font-semibold text-[#b39062]">
-                            0{i + 1}
-                          </span>
-                        </div>
-                        <h2 className="serif text-2xl sm:text-3xl lg:text-4xl mt-3 text-[#0B1528] font-medium tracking-tight">
-                          {item.title}
-                        </h2>
-                        <p className="text-stone-600 leading-relaxed text-sm lg:text-base mt-3 max-w-lg">
-                          {item.desc}
-                        </p>
-                        <ul className="mt-5 space-y-2.5 text-xs sm:text-sm text-stone-600">
-                          {item.benefits.map((x) => (
-                            <li key={x} className="flex items-center gap-2.5">
-                              <span className="w-1.5 h-1.5 rounded-full bg-[#b39062] shrink-0" />
-                              <span>{x}</span>
-                            </li>
-                          ))}
-                        </ul>
-                        <div className="mt-6 pt-4 border-t border-stone-100">
-                          <Link
-                            href="/contact"
-                            className="inline-flex items-center gap-2 text-xs uppercase tracking-[0.14em] font-semibold text-[#0B1528] hover:text-[#b39062] transition-colors group/cta"
-                          >
-                            <span>Speak to a specialist</span>
-                            <ArrowRight
-                              size={14}
-                              className="transition-transform duration-300 group-hover/cta:translate-x-1 text-[#b39062]"
-                            />
-                          </Link>
-                        </div>
-                      </div>
-                    </div>
+        {/* Service areas */}
+        <section className="shell sv-list" aria-label="Service areas in detail">
+          {SERVICES.map((s, i) => {
+            const flip = i % 2 === 1;
+            return (
+              <article
+                key={s.index}
+                id={`service-${s.index}`}
+                className={`sv-item ${flip ? 'sv-item--flip' : ''} sv-item--${s.ratio}`}
+                aria-labelledby={`service-title-${s.index}`}
+              >
+                <ScrollReveal className="sv-item__text">
+                  <span className="sv-item__num" aria-hidden="true">
+                    {s.index}
+                  </span>
+                  <div className="sv-item__body">
+                    <p className="sv-item__meta">
+                      <span className="sr-only">Service </span>
+                      {s.index}
+                    </p>
+                    <h2 id={`service-title-${s.index}`} className="sv-item__title">
+                      {s.title}
+                    </h2>
+                    <p className="sv-item__copy">{s.copy}</p>
+                    <ul className="sv-item__includes">
+                      {s.includes.map((x) => (
+                        <li key={x}>{x}</li>
+                      ))}
+                    </ul>
+                    <Link href="/contact" className="btn-link sv-item__cta">
+                      <span>Begin a conversation</span>
+                      <ArrowRight size={13} strokeWidth={1.75} aria-hidden="true" />
+                    </Link>
                   </div>
                 </ScrollReveal>
-              );
-            })}
+
+                <ScrollReveal stagger={1} className="sv-item__media">
+                  <div className="sv-item__frame">
+                    <Image
+                      src={s.image}
+                      alt={s.alt}
+                      fill
+                      sizes="(min-width: 1024px) 46vw, 100vw"
+                      className="sv-item__img"
+                      priority={i === 0}
+                    />
+                  </div>
+                </ScrollReveal>
+              </article>
+            );
+          })}
+        </section>
+
+        {/* Closing conversation */}
+        <section className="sv-cta on-dark" aria-labelledby="services-cta-heading">
+          <div className="shell sv-cta__grid">
+            <div>
+              <ScrollReveal>
+                <p className="eyebrow sv-cta__eyebrow">A private conversation</p>
+              </ScrollReveal>
+              <ScrollReveal stagger={1}>
+                <h2 id="services-cta-heading" className="sv-cta__title">
+                  Tell us where you are in the <em>journey.</em>
+                </h2>
+              </ScrollReveal>
+            </div>
+            <ScrollReveal stagger={2} className="sv-cta__aside">
+              <p className="sv-cta__copy">
+                Whether you are beginning a search, weighing an opportunity or caring for a property
+                you already own, the conversation starts the same way: privately, and at your pace.
+              </p>
+              <div className="sv-cta__actions">
+                <Link href="/contact" className="btn-inverse">
+                  <span>Request a Private Conversation</span>
+                  <ArrowRight size={13} strokeWidth={1.75} aria-hidden="true" />
+                </Link>
+                <Link href="/properties" className="btn-outline-inverse">
+                  <span>View the Collection</span>
+                </Link>
+              </div>
+            </ScrollReveal>
           </div>
         </section>
       </main>

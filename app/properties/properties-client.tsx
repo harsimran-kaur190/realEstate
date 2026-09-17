@@ -1,8 +1,10 @@
 'use client';
 
+import Link from 'next/link';
 import { useEffect, useMemo, useState } from 'react';
 import { createPortal } from 'react-dom';
 import {
+  ArrowRight,
   ArrowUpDown,
   Check,
   ChevronDown,
@@ -11,8 +13,16 @@ import {
   SlidersHorizontal,
   X,
 } from 'lucide-react';
-import { Footer, Navbar, PropertyCard } from '@/components/site';
+import { Footer, Navbar } from '@/components/site';
+import { PropertyListingCard } from '@/components/property-listing-card';
 import { properties } from '@/lib/properties';
+
+const PURPOSES = ['All', 'Buy', 'Rent', 'Commercial'];
+const CITIES = ['All', 'Dubai', 'Abu Dhabi', 'Sharjah'];
+const TYPES = ['All', 'Villa', 'Apartment', 'Office'];
+const PRICES = ['All', 'Under 1m', '1m–5m', '5m+'];
+const BEDS = ['All', '2+', '3+', '4+'];
+const SORTS = ['Featured', 'Price: low to high', 'Price: high to low'];
 
 const quickTags = [
   { id: 'all', label: 'All' },
@@ -44,7 +54,7 @@ export default function PropertiesClient() {
     setMounted(true);
   }, []);
 
-  // Lock body scroll when mobile modals are active
+  // Lock body scroll while a mobile sheet is open
   useEffect(() => {
     if (mobileFilterModalOpen || mobileSortModalOpen) {
       document.body.style.overflow = 'hidden';
@@ -56,6 +66,20 @@ export default function PropertiesClient() {
     };
   }, [mobileFilterModalOpen, mobileSortModalOpen]);
 
+  // Close sheets on Escape
+  useEffect(() => {
+    if (!mobileFilterModalOpen && !mobileSortModalOpen) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        setMobileFilterModalOpen(false);
+        setMobileSortModalOpen(false);
+      }
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [mobileFilterModalOpen, mobileSortModalOpen]);
+
+  // Seed filters from the query string (links from the homepage search + locations)
   useEffect(() => {
     const p = new URLSearchParams(window.location.search);
     setPurpose(p.get('purpose') || 'All');
@@ -150,465 +174,236 @@ export default function PropertiesClient() {
         reset();
         return;
       }
-      if (tag.type) {
-        setType(type === tag.type ? 'All' : tag.type);
-      }
-      if (tag.city) {
-        setCity(city === tag.city ? 'All' : tag.city);
-      }
-      if (tag.purpose) {
-        setPurpose(purpose === tag.purpose ? 'All' : tag.purpose);
-      }
-      if (tag.query) {
-        setQuery(query.toLowerCase() === tag.query.toLowerCase() ? '' : tag.query);
-      }
+      if (tag.type) setType(type === tag.type ? 'All' : tag.type);
+      if (tag.city) setCity(city === tag.city ? 'All' : tag.city);
+      if (tag.purpose) setPurpose(purpose === tag.purpose ? 'All' : tag.purpose);
+      if (tag.query) setQuery(query.toLowerCase() === tag.query.toLowerCase() ? '' : tag.query);
     });
   };
+
+  const gridKey = `${purpose}-${city}-${type}-${price}-${beds}-${sort}-${query}`;
+  const countLabel = `${list.length} ${list.length === 1 ? 'property' : 'properties'}`;
 
   return (
     <>
       <Navbar />
       <main>
-        {/* Header Hero - Full-bleed 50/50 split matching About page */}
-        <section className="grid md:grid-cols-2 min-h-[420px] lg:min-h-[480px] border-b border-[#20344d] w-full max-w-full overflow-hidden">
-          <div className="bg-[#112239] text-white p-6 sm:p-8 md:p-14 lg:p-20 flex flex-col justify-center">
-            <div className="flex items-center gap-2 text-xs uppercase tracking-[0.2em] text-[#d6b98f] font-semibold animate-hero-fade">
-              <span className="w-1.5 h-1.5 bg-[#d6b98f] rounded-full inline-block" />
-              <span>Our collection</span>
+        {/* Page introduction */}
+        <section className="pl-intro" aria-labelledby="collection-heading">
+          <div className="shell pl-intro__grid">
+            <div className="pl-intro__lead">
+              <p className="eyebrow animate-hero-reveal">The Collection</p>
+              <h1 id="collection-heading" className="pl-intro__title animate-hero-reveal delay-1">
+                Properties worth <em>considering.</em>
+              </h1>
             </div>
-            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl mt-4 animate-hero-fade delay-1 serif leading-[1.15]">
-              Properties with presence.
-            </h1>
-            <p className="text-[#c3ccd5] leading-7 mt-5 max-w-lg text-sm sm:text-base animate-hero-fade delay-2">
-              An edited selection of homes and workplaces across the UAE’s most sought-after neighbourhoods.
-            </p>
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6 pt-6 mt-8 border-t border-white/10 text-xs animate-hero-fade delay-3">
-              <div>
-                <strong className="block text-white font-medium text-sm">AED 4.8B+</strong>
-                <span className="text-[#93a1b2] text-[11px] uppercase tracking-wider">Curated Value</span>
-              </div>
-              <div>
-                <strong className="block text-white font-medium text-sm">100% Verified</strong>
-                <span className="text-[#93a1b2] text-[11px] uppercase tracking-wider">RERA Compliant</span>
-              </div>
-              <div>
-                <strong className="block text-white font-medium text-sm">Prime UAE</strong>
-                <span className="text-[#93a1b2] text-[11px] uppercase tracking-wider">Waterfront & City</span>
-              </div>
+            <div className="pl-intro__aside animate-hero-reveal delay-2">
+              <p className="pl-intro__copy">
+                A considered selection of residences and spaces across the UAE.
+              </p>
+              <p className="pl-intro__meta">
+                <span>Dubai · Abu Dhabi · Sharjah</span>
+                <span className="pl-intro__dot" aria-hidden="true" />
+                <span>Residential &amp; commercial</span>
+              </p>
             </div>
-          </div>
-          <div className="overflow-hidden bg-[#112239] relative min-h-[300px] md:min-h-full">
-            <img
-              className="absolute inset-0 w-full h-full object-cover animate-hero-fade"
-              src="/images/collection-uae-hero.jpg"
-              alt="Curated UAE luxury properties"
-              loading="eager"
-              fetchPriority="high"
-              decoding="async"
-            />
-            <div className="absolute inset-0 bg-gradient-to-t md:bg-gradient-to-l from-transparent to-[#112239]/20 pointer-events-none" />
           </div>
         </section>
 
-        {/* Filter & Collection Panel */}
-        <section className="shell pt-6 pb-24 md:pb-16">
-          <div className="border border-[#E6E1DA] bg-white p-4 md:p-7 shadow-xs w-full max-w-full rounded-2xl">
-            {/* Desktop Category Tabs */}
-            <div className="hidden md:flex gap-6 border-b border-[#E6E1DA] mb-5 overflow-auto">
-              {['All', 'Buy', 'Rent', 'Commercial'].map((x) => (
-                <button
-                  onClick={() => triggerTransition(() => setPurpose(x))}
-                  key={x}
-                  type="button"
-                  className={`pb-3 uppercase text-xs tracking-[.14em] shrink-0 font-medium transition-all duration-200 cursor-pointer ${
-                    purpose === x
-                      ? 'border-b-2 border-[#b39062] text-[#112239] font-semibold'
-                      : 'text-[#657080] hover:text-[#112239]'
-                  }`}
-                >
-                  {x}
-                </button>
-              ))}
+        {/* Filters + collection */}
+        <section className="shell pl-main" aria-label="Property collection">
+          {/* Desktop toolbar */}
+          <div className="pl-toolbar">
+            <div className="pl-toolbar__row pl-toolbar__row--tabs">
+              <div className="pl-tabs" role="group" aria-label="Purpose">
+                {PURPOSES.map((x) => (
+                  <button
+                    key={x}
+                    type="button"
+                    aria-pressed={purpose === x}
+                    onClick={() => triggerTransition(() => setPurpose(x))}
+                    className={`pl-tab ${purpose === x ? 'pl-tab--active' : ''}`}
+                  >
+                    {x}
+                  </button>
+                ))}
+              </div>
+              <p className="pl-toolbar__count" aria-live="polite">
+                {countLabel}
+              </p>
             </div>
 
-            {/* Mobile Filter UI (Spacious Search + Filter Modal Trigger + Clean Quick Tags) */}
-            <div className="md:hidden space-y-3">
-              <div className="flex items-center gap-2">
-                <div className="relative flex-1">
-                  <Search
-                    className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#8a959f] pointer-events-none"
-                    size={16}
-                  />
-                  <input
-                    aria-label="Search properties"
-                    className="w-full bg-[#faf9f6] border border-[#E6E1DA] h-11 pl-10 pr-9 text-xs sm:text-sm text-[#112239] placeholder:text-[#8a959f] focus:outline-none focus:border-[#b39062] focus:ring-1 focus:ring-[#b39062] transition-colors rounded-xl"
-                    placeholder="Search properties..."
-                    value={query}
-                    onChange={(e) => triggerTransition(() => setQuery(e.target.value))}
-                  />
-                  {query && (
-                    <button
-                      type="button"
-                      onClick={() => triggerTransition(() => setQuery(''))}
-                      className="absolute right-2.5 top-1/2 -translate-y-1/2 text-[#8a959f] hover:text-[#112239] p-1 cursor-pointer"
-                      aria-label="Clear search"
-                    >
-                      <X size={14} />
-                    </button>
-                  )}
-                </div>
-
-                <button
-                  type="button"
-                  onClick={() => setMobileFilterModalOpen(true)}
-                  className={`h-11 px-3.5 border rounded-xl text-xs uppercase tracking-[0.12em] font-semibold flex items-center gap-1.5 transition-all cursor-pointer shrink-0 ${
-                    activeFilterCount > 0
-                      ? 'bg-[#112239] text-white border-[#112239] shadow-sm'
-                      : 'bg-white text-[#112239] border-[#E6E1DA] hover:border-[#b39062]'
-                  }`}
-                >
-                  <SlidersHorizontal
-                    size={14}
-                    className={activeFilterCount > 0 ? 'text-[#d6b98f]' : 'text-[#b39062]'}
-                  />
-                  <span>Filter</span>
-                  {activeFilterCount > 0 && (
-                    <span className="w-4 h-4 rounded-full bg-[#b39062] text-white text-[9px] font-bold grid place-items-center">
-                      {activeFilterCount}
-                    </span>
-                  )}
-                </button>
+            <div className="pl-toolbar__row pl-toolbar__row--fields">
+              <div className="pl-search">
+                <Search size={15} strokeWidth={1.75} className="pl-search__icon" aria-hidden="true" />
+                <input
+                  aria-label="Search properties"
+                  className="pl-search__input"
+                  placeholder="Search by name, area or type"
+                  value={query}
+                  onChange={(e) => triggerTransition(() => setQuery(e.target.value))}
+                />
+                {query && (
+                  <button
+                    type="button"
+                    onClick={() => triggerTransition(() => setQuery(''))}
+                    className="pl-search__clear"
+                    aria-label="Clear search"
+                  >
+                    <X size={14} strokeWidth={1.75} aria-hidden="true" />
+                  </button>
+                )}
               </div>
 
-              {/* Horizontal Scrollable Row of Quick Filter Tags (No clipping, smooth scroll) */}
-              <div className="flex items-center gap-2 overflow-x-auto no-scrollbar py-0.5 w-full">
+              <div className="pl-selects">
+                <Filter val={city} change={(v) => triggerTransition(() => setCity(v))} options={CITIES} label="Location" />
+                <Filter val={type} change={(v) => triggerTransition(() => setType(v))} options={TYPES} label="Property type" />
+                <Filter val={price} change={(v) => triggerTransition(() => setPrice(v))} options={PRICES} label="Price" />
+                <Filter val={beds} change={(v) => triggerTransition(() => setBeds(v))} options={BEDS} label="Bedrooms" />
+                <Filter val={sort} change={(v) => triggerTransition(() => setSort(v))} options={SORTS} label="Sort" sort />
+              </div>
+
+              <button
+                type="button"
+                onClick={() => setMobileFilterModalOpen(true)}
+                className={`pl-filter-btn ${activeFilterCount > 0 ? 'pl-filter-btn--active' : ''}`}
+                aria-haspopup="dialog"
+              >
+                <SlidersHorizontal size={14} strokeWidth={1.75} aria-hidden="true" />
+                <span>Filter</span>
+                {activeFilterCount > 0 && <span className="pl-badge">{activeFilterCount}</span>}
+              </button>
+            </div>
+
+            <div className="pl-toolbar__row pl-toolbar__row--tags">
+              <div className="pl-tags no-scrollbar">
                 {quickTags.map((tag) => {
                   const isActive = isQuickTagActive(tag);
                   return (
                     <button
                       key={tag.label}
                       type="button"
+                      aria-pressed={isActive}
                       onClick={() => handleQuickTagClick(tag)}
-                      className={`shrink-0 px-3.5 py-1.5 text-xs font-medium rounded-full border transition-all duration-200 cursor-pointer ${
-                        isActive
-                          ? 'bg-[#112239] text-white border-[#112239] shadow-xs'
-                          : 'bg-[#faf9f6] text-[#657080] border-[#E6E1DA] hover:border-[#b39062] hover:text-[#112239]'
-                      }`}
+                      className={`pl-tag ${isActive ? 'pl-tag--active' : ''}`}
                     >
                       {tag.label}
                     </button>
                   );
                 })}
               </div>
+              {activeFilterCount > 0 && (
+                <button type="button" onClick={reset} className="pl-reset">
+                  <RotateCcw size={12} strokeWidth={1.75} aria-hidden="true" />
+                  <span>Reset</span>
+                </button>
+              )}
             </div>
+          </div>
 
-            {/* Desktop Filters (Always visible on md+) */}
-            <div className="hidden md:block">
-              <div className="flex items-center gap-2 text-[10px] uppercase tracking-[.14em] text-[#657080] mb-3 font-semibold">
-                <SlidersHorizontal size={14} className="text-[#b39062]" /> Refine your collection
+          {/* Grid */}
+          <div className={`filter-grid-wrapper pl-grid-wrap ${isTransitioning ? 'filter-grid-updating' : ''}`}>
+            {list.length > 0 ? (
+              <div className="pl-grid" key={gridKey}>
+                {list.map((p, idx) => (
+                  <div
+                    key={p.slug}
+                    className="property-card-enter"
+                    style={{ animationDelay: `${Math.min(idx * 0.05, 0.3)}s` }}
+                  >
+                    <PropertyListingCard p={p} index={idx} priority={idx < 2} />
+                  </div>
+                ))}
               </div>
-
-              <div className="grid md:grid-cols-3 lg:grid-cols-6 gap-3">
-                <div className="relative">
-                  <Search
-                    className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#8a959f] pointer-events-none"
-                    size={15}
-                  />
-                  <input
-                    aria-label="Search properties"
-                    className="w-full bg-white border border-[#E6E1DA] h-[48px] pl-10 pr-4 py-2.5 text-sm text-[#112239] placeholder:text-[#8a959f] focus:outline-none focus:border-[#b39062] focus:ring-1 focus:ring-[#b39062] transition-colors rounded-[2px]"
-                    placeholder="Search properties..."
-                    value={query}
-                    onChange={(e) => triggerTransition(() => setQuery(e.target.value))}
-                  />
+            ) : (
+              <div className="pl-empty" key={`${gridKey}-empty`} role="status">
+                <p className="eyebrow">Nothing matches this brief</p>
+                <h2 className="pl-empty__title">
+                  The collection is deliberately <em>small.</em>
+                </h2>
+                <p className="pl-empty__copy">
+                  No properties match the current filters. Broaden the search, or tell us what
+                  you are looking for and we will keep it in mind as the collection evolves.
+                </p>
+                <div className="pl-empty__actions">
+                  <button onClick={reset} type="button" className="btn">
+                    <RotateCcw size={13} strokeWidth={1.75} aria-hidden="true" />
+                    <span>Reset filters</span>
+                  </button>
+                  <Link href="/contact" className="btn-secondary">
+                    <span>Speak with an advisor</span>
+                    <ArrowRight size={13} strokeWidth={1.75} aria-hidden="true" />
+                  </Link>
                 </div>
-                <Filter
-                  val={city}
-                  change={(v) => triggerTransition(() => setCity(v))}
-                  options={['All', 'Dubai', 'Abu Dhabi', 'Sharjah']}
-                  label="Location"
-                />
-                <Filter
-                  val={type}
-                  change={(v) => triggerTransition(() => setType(v))}
-                  options={['All', 'Villa', 'Apartment', 'Office']}
-                  label="Property type"
-                />
-                <Filter
-                  val={price}
-                  change={(v) => triggerTransition(() => setPrice(v))}
-                  options={['All', 'Under 1m', '1m–5m', '5m+']}
-                  label="Price"
-                />
-                <Filter
-                  val={beds}
-                  change={(v) => triggerTransition(() => setBeds(v))}
-                  options={['All', '2+', '3+', '4+']}
-                  label="Bedrooms"
-                />
-                <Filter
-                  val={sort}
-                  change={(v) => triggerTransition(() => setSort(v))}
-                  options={['Featured', 'Price: low to high', 'Price: high to low']}
-                  label="Sort"
-                />
               </div>
-
-              <button
-                onClick={reset}
-                type="button"
-                className="mt-4 text-xs uppercase tracking-[.12em] text-[#657080] hover:text-[#112239] transition-colors inline-flex items-center gap-1.5 cursor-pointer"
-              >
-                <RotateCcw size={12} />
-                <span className="underline underline-offset-4">Reset all filters</span>
-              </button>
-            </div>
+            )}
           </div>
 
-          <div className="flex justify-between items-center mt-6 mb-5">
-            <p className="text-sm text-[#657080]">
-              Showing <span className="font-semibold text-[#112239]">{list.length}</span> exceptional properties
-            </p>
-            <p className="text-xs uppercase tracking-[.14em] text-[#8e98a5]">UAE Curated Portfolio</p>
+          <div className="pl-foot">
+            <p className="pl-foot__note">Every property is presented on its own merits.</p>
+            <Link href="/contact" className="btn-link">
+              <span>Request a private viewing</span>
+              <ArrowRight size={13} strokeWidth={1.75} aria-hidden="true" />
+            </Link>
           </div>
-
-          {/* Smooth animated property grid */}
-          <div className={`filter-grid-wrapper ${isTransitioning ? 'filter-grid-updating' : ''}`}>
-            <div
-              className="grid-3"
-              key={`${purpose}-${city}-${type}-${price}-${beds}-${sort}-${query}`}
-            >
-              {list.map((p, idx) => (
-                <div
-                  key={p.slug}
-                  className="property-card-enter"
-                  style={{ animationDelay: `${Math.min(idx * 0.04, 0.24)}s` }}
-                >
-                  <PropertyCard p={p} index={idx} reveal={false} />
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {!list.length && (
-            <div className="text-center py-20 text-[#657080] bg-white border border-[#E6E1DA] mt-4">
-              <p className="serif text-2xl text-[#112239]">No properties match these criteria.</p>
-              <p className="text-sm mt-2 text-[#657080]">
-                Try adjusting your filters or resetting to view the full collection.
-              </p>
-              <button onClick={reset} type="button" className="btn btn-outline mt-6">
-                Reset all filters
-              </button>
-            </div>
-          )}
         </section>
 
-        {/* Sticky Mobile Filter & Sort Bar */}
-        <div className="fixed bottom-[calc(1.25rem+env(safe-area-inset-bottom,0px))] left-1/2 -translate-x-1/2 z-40 md:hidden flex items-center bg-[#112239]/95 backdrop-blur-md text-white px-2 py-1.5 rounded-full shadow-2xl border border-white/15 max-w-[calc(100vw-2rem)]">
-          <button
-            type="button"
-            onClick={() => setMobileFilterModalOpen(true)}
-            className="flex items-center gap-2 px-3.5 py-1.5 text-xs uppercase tracking-[0.14em] font-semibold text-white hover:text-[#d6b98f] transition-colors cursor-pointer"
-          >
-            <SlidersHorizontal size={13} className="text-[#b39062]" />
+        {/* Mobile floating filter / sort bar */}
+        <div className="pl-dock" aria-label="Filter and sort">
+          <button type="button" onClick={() => setMobileFilterModalOpen(true)} className="pl-dock__btn" aria-haspopup="dialog">
+            <SlidersHorizontal size={13} strokeWidth={1.75} aria-hidden="true" />
             <span>Filter</span>
-            {activeFilterCount > 0 && (
-              <span className="w-4 h-4 rounded-full bg-[#b39062] text-white text-[9px] font-bold grid place-items-center">
-                {activeFilterCount}
-              </span>
-            )}
+            {activeFilterCount > 0 && <span className="pl-badge pl-badge--on-dark">{activeFilterCount}</span>}
           </button>
-          <span className="w-px h-4 bg-white/20" />
-          <button
-            type="button"
-            onClick={() => setMobileSortModalOpen(true)}
-            className="flex items-center gap-2 px-3.5 py-1.5 text-xs uppercase tracking-[0.14em] font-semibold text-white hover:text-[#d6b98f] transition-colors cursor-pointer"
-          >
-            <ArrowUpDown size={13} className="text-[#b39062]" />
+          <span className="pl-dock__divider" aria-hidden="true" />
+          <button type="button" onClick={() => setMobileSortModalOpen(true)} className="pl-dock__btn" aria-haspopup="dialog">
+            <ArrowUpDown size={13} strokeWidth={1.75} aria-hidden="true" />
             <span>Sort</span>
           </button>
         </div>
 
-        {/* Mobile Filter Sheet Modal */}
+        {/* Filter sheet */}
         {mounted &&
           mobileFilterModalOpen &&
           createPortal(
-            <div
-              className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-end justify-center md:hidden w-full max-w-[100vw] overflow-x-hidden animate-fade-in"
-              onClick={() => setMobileFilterModalOpen(false)}
-            >
+            <div className="pl-sheet-backdrop animate-fade-in" onClick={() => setMobileFilterModalOpen(false)}>
               <div
-                className="bg-white w-full max-w-lg rounded-t-3xl border-t border-[#E6E1DA] shadow-2xl animate-card-entrance flex flex-col max-h-[88vh] overflow-hidden"
+                className="pl-sheet"
+                role="dialog"
+                aria-modal="true"
+                aria-labelledby="filter-sheet-title"
                 onClick={(e) => e.stopPropagation()}
               >
-                {/* Modal Header */}
-                <div className="flex items-center justify-between px-5 py-4 border-b border-[#E6E1DA] shrink-0 bg-white">
-                  <div className="flex items-center gap-2">
-                    <SlidersHorizontal size={16} className="text-[#b39062]" />
-                    <h3 className="serif text-xl text-[#112239]">Filter Properties</h3>
-                    {activeFilterCount > 0 && (
-                      <span className="w-5 h-5 rounded-full bg-[#112239] text-[#d6b98f] text-[10px] font-bold grid place-items-center">
-                        {activeFilterCount}
-                      </span>
-                    )}
+                <div className="pl-sheet__head">
+                  <div className="pl-sheet__title-row">
+                    <h2 id="filter-sheet-title" className="pl-sheet__title">Refine the collection</h2>
+                    {activeFilterCount > 0 && <span className="pl-badge">{activeFilterCount}</span>}
                   </div>
-                  <div className="flex items-center gap-3">
-                    {activeFilterCount > 0 && (
-                      <button
-                        type="button"
-                        onClick={reset}
-                        className="text-xs text-[#657080] hover:text-[#112239] underline underline-offset-2 cursor-pointer font-medium"
-                      >
-                        Clear all
-                      </button>
-                    )}
-                    <button
-                      type="button"
-                      onClick={() => setMobileFilterModalOpen(false)}
-                      className="p-1.5 text-[#657080] hover:text-[#112239] rounded-lg hover:bg-black/5 cursor-pointer"
-                      aria-label="Close filter modal"
-                    >
-                      <X size={18} />
-                    </button>
-                  </div>
-                </div>
-
-                {/* Scrollable Filters Content */}
-                <div className="overflow-y-auto px-5 py-4 space-y-5 flex-1">
-                  {/* Purpose / Status */}
-                  <div>
-                    <span className="block text-[11px] uppercase tracking-[0.14em] text-[#657080] font-semibold mb-2">
-                      Purpose
-                    </span>
-                    <div className="grid grid-cols-4 gap-2">
-                      {['All', 'Buy', 'Rent', 'Commercial'].map((opt) => (
-                        <button
-                          key={opt}
-                          type="button"
-                          onClick={() => triggerTransition(() => setPurpose(opt))}
-                          className={`py-2 text-xs font-medium rounded-xl border text-center transition-all cursor-pointer ${
-                            purpose === opt
-                              ? 'bg-[#112239] text-white border-[#112239] shadow-xs'
-                              : 'bg-[#faf9f6] text-[#657080] border-[#E6E1DA] hover:border-[#b39062]'
-                          }`}
-                        >
-                          {opt}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-
-                  {/* Location */}
-                  <div>
-                    <span className="block text-[11px] uppercase tracking-[0.14em] text-[#657080] font-semibold mb-2">
-                      Location
-                    </span>
-                    <div className="grid grid-cols-2 gap-2">
-                      {['All', 'Dubai', 'Abu Dhabi', 'Sharjah'].map((opt) => (
-                        <button
-                          key={opt}
-                          type="button"
-                          onClick={() => triggerTransition(() => setCity(opt))}
-                          className={`py-2.5 px-3 text-xs font-medium rounded-xl border text-center transition-all cursor-pointer ${
-                            city === opt
-                              ? 'bg-[#112239] text-white border-[#112239] shadow-xs'
-                              : 'bg-[#faf9f6] text-[#657080] border-[#E6E1DA] hover:border-[#b39062]'
-                          }`}
-                        >
-                          {opt === 'All' ? 'All Locations' : opt}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-
-                  {/* Property Type */}
-                  <div>
-                    <span className="block text-[11px] uppercase tracking-[0.14em] text-[#657080] font-semibold mb-2">
-                      Property Type
-                    </span>
-                    <div className="grid grid-cols-2 gap-2">
-                      {['All', 'Villa', 'Apartment', 'Office'].map((opt) => (
-                        <button
-                          key={opt}
-                          type="button"
-                          onClick={() => triggerTransition(() => setType(opt))}
-                          className={`py-2.5 px-3 text-xs font-medium rounded-xl border text-center transition-all cursor-pointer ${
-                            type === opt
-                              ? 'bg-[#112239] text-white border-[#112239] shadow-xs'
-                              : 'bg-[#faf9f6] text-[#657080] border-[#E6E1DA] hover:border-[#b39062]'
-                          }`}
-                        >
-                          {opt === 'All' ? 'All Types' : opt}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-
-                  {/* Price Range */}
-                  <div>
-                    <span className="block text-[11px] uppercase tracking-[0.14em] text-[#657080] font-semibold mb-2">
-                      Price Range
-                    </span>
-                    <div className="grid grid-cols-2 gap-2">
-                      {['All', 'Under 1m', '1m–5m', '5m+'].map((opt) => (
-                        <button
-                          key={opt}
-                          type="button"
-                          onClick={() => triggerTransition(() => setPrice(opt))}
-                          className={`py-2.5 px-3 text-xs font-medium rounded-xl border text-center transition-all cursor-pointer ${
-                            price === opt
-                              ? 'bg-[#112239] text-white border-[#112239] shadow-xs'
-                              : 'bg-[#faf9f6] text-[#657080] border-[#E6E1DA] hover:border-[#b39062]'
-                          }`}
-                        >
-                          {opt === 'All' ? 'Any Price' : opt}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-
-                  {/* Bedrooms */}
-                  <div>
-                    <span className="block text-[11px] uppercase tracking-[0.14em] text-[#657080] font-semibold mb-2">
-                      Bedrooms
-                    </span>
-                    <div className="grid grid-cols-4 gap-2">
-                      {['All', '2+', '3+', '4+'].map((opt) => (
-                        <button
-                          key={opt}
-                          type="button"
-                          onClick={() => triggerTransition(() => setBeds(opt))}
-                          className={`py-2 text-xs font-medium rounded-xl border text-center transition-all cursor-pointer ${
-                            beds === opt
-                              ? 'bg-[#112239] text-white border-[#112239] shadow-xs'
-                              : 'bg-[#faf9f6] text-[#657080] border-[#E6E1DA] hover:border-[#b39062]'
-                          }`}
-                        >
-                          {opt === 'All' ? 'Any' : `${opt} Beds`}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-
-                {/* Sticky Footer */}
-                <div className="p-4 border-t border-[#E6E1DA] bg-white shrink-0 flex items-center gap-3 pb-[calc(1rem+env(safe-area-inset-bottom,0px))]">
-                  <button
-                    type="button"
-                    onClick={reset}
-                    className="px-4 py-3 border border-[#E6E1DA] text-xs font-semibold uppercase tracking-[0.12em] text-[#657080] hover:text-[#112239] rounded-xl flex items-center gap-1.5 cursor-pointer shrink-0"
-                  >
-                    <RotateCcw size={13} />
-                    <span>Reset</span>
-                  </button>
                   <button
                     type="button"
                     onClick={() => setMobileFilterModalOpen(false)}
-                    className="flex-1 py-3 px-4 bg-[#112239] hover:bg-[#1a3354] text-white text-xs font-semibold uppercase tracking-[0.14em] rounded-xl shadow-md transition-all text-center flex items-center justify-center gap-2 cursor-pointer"
+                    className="pl-sheet__close"
+                    aria-label="Close filters"
                   >
-                    <span>
-                      Show {list.length} {list.length === 1 ? 'Property' : 'Properties'}
-                    </span>
+                    <X size={18} strokeWidth={1.5} aria-hidden="true" />
+                  </button>
+                </div>
+
+                <div className="pl-sheet__body">
+                  <SheetGroup label="Purpose" options={PURPOSES} value={purpose} onChange={(v) => triggerTransition(() => setPurpose(v))} columns={4} />
+                  <SheetGroup label="Location" options={CITIES} value={city} onChange={(v) => triggerTransition(() => setCity(v))} allLabel="All locations" />
+                  <SheetGroup label="Property type" options={TYPES} value={type} onChange={(v) => triggerTransition(() => setType(v))} allLabel="All types" />
+                  <SheetGroup label="Price range" options={PRICES} value={price} onChange={(v) => triggerTransition(() => setPrice(v))} allLabel="Any price" />
+                  <SheetGroup label="Bedrooms" options={BEDS} value={beds} onChange={(v) => triggerTransition(() => setBeds(v))} allLabel="Any" columns={4} suffix=" beds" />
+                </div>
+
+                <div className="pl-sheet__foot">
+                  <button type="button" onClick={reset} className="btn-secondary pl-sheet__reset">
+                    <RotateCcw size={13} strokeWidth={1.75} aria-hidden="true" />
+                    <span>Reset</span>
+                  </button>
+                  <button type="button" onClick={() => setMobileFilterModalOpen(false)} className="btn pl-sheet__apply">
+                    <span>Show {countLabel}</span>
                   </button>
                 </div>
               </div>
@@ -616,49 +411,43 @@ export default function PropertiesClient() {
             document.body
           )}
 
-        {/* Mobile Sort Sheet Modal */}
+        {/* Sort sheet */}
         {mounted &&
           mobileSortModalOpen &&
           createPortal(
-            <div
-              className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-end justify-center md:hidden w-full max-w-[100vw] overflow-x-hidden animate-fade-in"
-              onClick={() => setMobileSortModalOpen(false)}
-            >
+            <div className="pl-sheet-backdrop animate-fade-in" onClick={() => setMobileSortModalOpen(false)}>
               <div
-                className="bg-white w-full max-w-lg rounded-t-3xl p-6 border-t border-[#E6E1DA] shadow-2xl animate-card-entrance overflow-hidden pb-[calc(1.5rem+env(safe-area-inset-bottom,0px))]"
+                className="pl-sheet pl-sheet--compact"
+                role="dialog"
+                aria-modal="true"
+                aria-labelledby="sort-sheet-title"
                 onClick={(e) => e.stopPropagation()}
               >
-                <div className="flex items-center justify-between pb-4 border-b border-[#E6E1DA]">
-                  <div className="flex items-center gap-2">
-                    <ArrowUpDown size={16} className="text-[#b39062]" />
-                    <h3 className="serif text-xl text-[#112239]">Sort Properties</h3>
-                  </div>
+                <div className="pl-sheet__head">
+                  <h2 id="sort-sheet-title" className="pl-sheet__title">Sort</h2>
                   <button
                     type="button"
                     onClick={() => setMobileSortModalOpen(false)}
-                    className="p-1.5 text-[#657080] hover:text-[#112239] rounded-lg hover:bg-black/5 cursor-pointer"
-                    aria-label="Close sort modal"
+                    className="pl-sheet__close"
+                    aria-label="Close sort"
                   >
-                    <X size={18} />
+                    <X size={18} strokeWidth={1.5} aria-hidden="true" />
                   </button>
                 </div>
-                <div className="py-3 space-y-1.5">
-                  {['Featured', 'Price: low to high', 'Price: high to low'].map((opt) => (
+                <div className="pl-sheet__body pl-sheet__body--list">
+                  {SORTS.map((opt) => (
                     <button
                       key={opt}
                       type="button"
+                      aria-pressed={sort === opt}
                       onClick={() => {
                         triggerTransition(() => setSort(opt));
                         setMobileSortModalOpen(false);
                       }}
-                      className={`w-full text-left py-3 px-3.5 flex items-center justify-between text-sm transition-all cursor-pointer rounded-xl ${
-                        sort === opt
-                          ? 'bg-[#112239] text-white font-medium shadow-xs'
-                          : 'text-[#657080] hover:bg-black/5'
-                      }`}
+                      className={`pl-sort-option ${sort === opt ? 'pl-sort-option--active' : ''}`}
                     >
                       <span>{opt}</span>
-                      {sort === opt && <Check size={16} className="text-[#d6b98f]" />}
+                      {sort === opt && <Check size={15} strokeWidth={1.75} aria-hidden="true" />}
                     </button>
                   ))}
                 </div>
@@ -677,31 +466,65 @@ function Filter({
   change,
   options,
   label,
+  sort = false,
 }: {
   val: string;
   change: (x: string) => void;
   options: string[];
   label: string;
+  sort?: boolean;
 }) {
+  const active = sort ? val !== 'Featured' : val !== 'All';
   return (
-    <div className="relative">
-      <select
-        aria-label={label}
-        className="w-full appearance-none bg-white border border-[#E6E1DA] h-[48px] pl-3.5 pr-8 py-2.5 text-xs sm:text-sm text-[#112239] focus:outline-none focus:border-[#b39062] focus:ring-1 focus:ring-[#b39062] transition-colors rounded-[2px] cursor-pointer"
-        value={val}
-        onChange={(e) => change(e.target.value)}
-      >
-        {options.map((x) => (
-          <option key={x} value={x}>
-            {x === 'All' ? `Any ${label.toLowerCase()}` : x}
-          </option>
-        ))}
-      </select>
-      <ChevronDown
-        size={14}
-        className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-[#8a959f]"
-      />
-    </div>
+    <label className={`pl-select ${active ? 'pl-select--active' : ''}`}>
+      <span className="pl-select__label">{label}</span>
+      <span className="pl-select__control">
+        <select className="pl-select__input" value={val} onChange={(e) => change(e.target.value)}>
+          {options.map((x) => (
+            <option key={x} value={x}>
+              {x === 'All' ? `Any ${label.toLowerCase()}` : x}
+            </option>
+          ))}
+        </select>
+        <ChevronDown size={14} strokeWidth={1.5} className="pl-select__chevron" aria-hidden="true" />
+      </span>
+    </label>
   );
 }
 
+function SheetGroup({
+  label,
+  options,
+  value,
+  onChange,
+  allLabel = 'All',
+  columns = 2,
+  suffix = '',
+}: {
+  label: string;
+  options: string[];
+  value: string;
+  onChange: (v: string) => void;
+  allLabel?: string;
+  columns?: 2 | 4;
+  suffix?: string;
+}) {
+  return (
+    <fieldset className="pl-group">
+      <legend className="pl-group__label">{label}</legend>
+      <div className={`pl-group__options pl-group__options--${columns}`}>
+        {options.map((opt) => (
+          <button
+            key={opt}
+            type="button"
+            aria-pressed={value === opt}
+            onClick={() => onChange(opt)}
+            className={`pl-option ${value === opt ? 'pl-option--active' : ''}`}
+          >
+            {opt === 'All' ? allLabel : `${opt}${suffix}`}
+          </button>
+        ))}
+      </div>
+    </fieldset>
+  );
+}

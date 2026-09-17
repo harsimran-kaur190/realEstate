@@ -7,8 +7,8 @@ export default function manifest(): MetadataRoute.Manifest {
     description: 'A fictional premium UAE real estate demo.',
     start_url: '/',
     display: 'standalone',
-    background_color: '#f8f6f1',
-    theme_color: '#b39062',
+    background_color: '#FAF8F5',
+    theme_color: '#0D1726',
     icons: [
       {
         src: '/icon.png',

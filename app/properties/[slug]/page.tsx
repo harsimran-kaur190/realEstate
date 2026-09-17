@@ -1,24 +1,11 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
-import {
-  Bath,
-  BedDouble,
-  Check,
-  MapPin,
-  Ruler,
-  ArrowRight,
-} from 'lucide-react';
-import {
-  FloorPlanSection,
-  Footer,
-  LocationSection,
-  Navbar,
-  PropertyCard,
-  PropertyEnquiryForm,
-  PropertyGallery,
-  ScrollReveal,
-} from '@/components/site';
+import { ArrowLeft, ArrowRight } from 'lucide-react';
+import { Footer, Navbar, PropertyEnquiryForm, ScrollReveal } from '@/components/site';
+import { PropertyDossierGallery } from '@/components/property-dossier-gallery';
+import { PropertyListingCard } from '@/components/property-listing-card';
+import { FavouriteButton } from '@/components/favourite-button';
 import { formatAED, properties } from '@/lib/properties';
 
 export async function generateMetadata({
@@ -64,142 +51,200 @@ export default async function Detail({
   const p = properties.find((x) => x.slug === slug);
   if (!p) return notFound();
 
+  const priceNote = p.purpose === 'Rent' ? 'per year' : null;
+  const related = properties.filter((x) => x.slug !== p.slug).slice(0, 3);
+
   return (
     <>
       <Navbar />
-      <main>
-        {/* Breadcrumb */}
-        <div className="shell py-6 text-xs text-[#657080] flex items-center gap-2">
-          <Link href="/properties" className="hover:text-[#112239] transition-colors">
-            Properties
-          </Link>
-          <span>/</span>
-          <span className="text-[#112239] font-medium">{p.name}</span>
-        </div>
+      <main className="pd">
+        {/* Dossier header */}
+        <section className="shell pd-head" aria-labelledby="property-heading">
+          <nav className="pd-crumb" aria-label="Breadcrumb">
+            <Link href="/properties" className="pd-crumb__link">
+              <ArrowLeft size={12} strokeWidth={1.75} aria-hidden="true" />
+              <span>The Collection</span>
+            </Link>
+            <span className="pd-crumb__sep" aria-hidden="true" />
+            <span className="pd-crumb__current">{p.place}</span>
+          </nav>
 
-        {/* Interactive Property Gallery with Lightbox */}
-        <section className="shell animate-hero-fade">
-          <PropertyGallery images={p.gallery} title={p.name} />
+          <div className="pd-head__grid">
+            <div className="pd-head__lead animate-hero-reveal">
+              <p className="eyebrow">
+                {p.purpose} · {p.type}
+              </p>
+              <h1 id="property-heading" className="pd-head__title">
+                {p.name}
+              </h1>
+              <p className="pd-head__place">{p.place}</p>
+            </div>
+
+            <div className="pd-head__aside animate-hero-reveal delay-1">
+              <div className="pd-head__price-row">
+                <p className="pd-head__price">
+                  {formatAED(p.price)}
+                  {priceNote && <span className="pd-head__price-note">{priceNote}</span>}
+                </p>
+                <FavouriteButton slug={p.slug} name={p.name} className="pd-head__fav" />
+              </div>
+              <p className="pd-head__spec">
+                {p.beds > 0 && (
+                  <>
+                    <span>{p.beds} {p.beds === 1 ? 'Bedroom' : 'Bedrooms'}</span>
+                    <span className="pd-dot" aria-hidden="true" />
+                  </>
+                )}
+                <span>{p.baths} {p.baths === 1 ? 'Bathroom' : 'Bathrooms'}</span>
+                <span className="pd-dot" aria-hidden="true" />
+                <span>{p.area.toLocaleString()} sq ft</span>
+              </p>
+            </div>
+          </div>
         </section>
 
-        {/* Main Details & Private Viewing Enquiry */}
-        <section className="shell py-10 sm:py-16">
-          <div className="grid md:grid-cols-[1.45fr_.75fr] gap-10 md:gap-14 items-stretch">
-            <div className="min-w-0">
-              <ScrollReveal>
-                <p className="eyebrow">
-                  {p.purpose} · {p.type}
-                </p>
-                <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl mt-2 font-normal text-[#112239] break-words">
-                  {p.name}
-                </h1>
-                <p className="flex items-center gap-1.5 text-[#657080] mt-4">
-                  <MapPin size={16} className="text-[#b39062]" />
-                  {p.place}
-                </p>
-                <p className="serif text-2xl sm:text-3xl md:text-4xl mt-4 sm:mt-6 text-[#112239]">
-                  {formatAED(p.price)}{' '}
-                  {p.purpose === 'Rent' && (
-                    <span className="font-sans text-sm text-[#657080] font-normal">
-                      / year
-                    </span>
-                  )}
-                </p>
+        {/* Gallery */}
+        <section className="shell pd-gallery-section animate-hero-reveal delay-2" aria-label="Gallery">
+          <PropertyDossierGallery images={p.gallery} title={p.name} />
+        </section>
 
-                {/* Key Metrics Bar */}
-                <div className="grid grid-cols-3 border-y border-[#e6e3dc] py-4 sm:py-6 mt-6 sm:mt-8 text-xs sm:text-sm text-center md:text-left gap-2 sm:gap-4">
-                  {[
-                    [BedDouble, `${p.beds || '—'} Bedrooms`],
-                    [Bath, `${p.baths} Bathrooms`],
-                    [Ruler, `${p.area.toLocaleString()} sq ft`],
-                  ].map(([I, l]) => {
-                    const Icon = I as typeof BedDouble;
-                    return (
-                      <span
-                        className="flex flex-col md:flex-row gap-1.5 sm:gap-2.5 items-center text-[#112239] font-medium"
-                        key={String(l)}
-                      >
-                        <Icon size={19} color="#b39062" />
-                        {String(l)}
-                      </span>
-                    );
-                  })}
+        {/* Dossier body */}
+        <section className="shell pd-body">
+          <div className="pd-body__grid">
+            <div className="pd-content">
+              <ScrollReveal>
+                <div className="pd-block">
+                  <p className="eyebrow">Overview</p>
+                  <h2 className="pd-block__title">A considered place to live.</h2>
+                  <p className="pd-block__lede">{p.description}</p>
                 </div>
               </ScrollReveal>
 
               <ScrollReveal stagger={1}>
-                <h2 className="serif text-2xl sm:text-3xl mt-8 sm:mt-12 text-[#112239]">
-                  A considered place to live.
-                </h2>
-                <p className="text-[#657080] leading-7 sm:leading-8 mt-3 sm:mt-4 max-w-2xl text-sm sm:text-base">
-                  {p.description} This fictional listing has been curated to demonstrate a thoughtfully considered premium real-estate experience.
-                </p>
-              </ScrollReveal>
-
-              <ScrollReveal stagger={2}>
-                <h2 className="serif text-2xl sm:text-3xl mt-8 sm:mt-12 text-[#112239]">
-                  Property highlights
-                </h2>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 sm:gap-3.5 mt-4 sm:mt-5">
-                  {p.amenities.map((a) => (
-                    <p key={a} className="flex items-center gap-2.5 text-sm text-[#314052]">
-                      <Check size={16} color="#b39062" />
-                      {a}
-                    </p>
-                  ))}
+                <div className="pd-block">
+                  <p className="eyebrow">Specifications</p>
+                  <dl className="pd-spec">
+                    <div className="pd-spec__row">
+                      <dt>Property type</dt>
+                      <dd>{p.type}</dd>
+                    </div>
+                    <div className="pd-spec__row">
+                      <dt>Offering</dt>
+                      <dd>{p.purpose === 'Commercial' ? 'Commercial lease' : p.purpose === 'Rent' ? 'For rent' : 'For sale'}</dd>
+                    </div>
+                    <div className="pd-spec__row">
+                      <dt>Location</dt>
+                      <dd>{p.place}</dd>
+                    </div>
+                    {p.beds > 0 && (
+                      <div className="pd-spec__row">
+                        <dt>Bedrooms</dt>
+                        <dd>{p.beds}</dd>
+                      </div>
+                    )}
+                    <div className="pd-spec__row">
+                      <dt>Bathrooms</dt>
+                      <dd>{p.baths}</dd>
+                    </div>
+                    <div className="pd-spec__row">
+                      <dt>Built-up area</dt>
+                      <dd>{p.area.toLocaleString()} sq ft</dd>
+                    </div>
+                    <div className="pd-spec__row">
+                      <dt>Price</dt>
+                      <dd>
+                        {formatAED(p.price)}
+                        {priceNote && <span className="pd-spec__note">{priceNote}</span>}
+                      </dd>
+                    </div>
+                  </dl>
                 </div>
               </ScrollReveal>
 
-              {/* Refined Architectural Floor Plan Block */}
-              <ScrollReveal stagger={3}>
-                <FloorPlanSection property={p} />
-              </ScrollReveal>
+              {p.amenities.length > 0 && (
+                <ScrollReveal stagger={2}>
+                  <div className="pd-block">
+                    <p className="eyebrow">Features</p>
+                    <ul className="pd-features">
+                      {p.amenities.map((a) => (
+                        <li key={a} className="pd-features__item">
+                          {a}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                </ScrollReveal>
+              )}
 
-              {/* Refined Location & Connectivity Block */}
-              <ScrollReveal stagger={4}>
-                <LocationSection property={p} />
+              <ScrollReveal stagger={3}>
+                <p className="pd-note">
+                  Demonstration listing. Altiere Estates is an independent design and development
+                  showcase; details are presented for illustration.
+                </p>
               </ScrollReveal>
             </div>
 
-            {/* Sidebar Sticky Enquiry Card */}
-            <aside className="h-full relative">
-              <div id="enquiry" className="border border-[#e6e3dc] bg-white p-5 sm:p-7 sticky top-28 shadow-lg shadow-black/5 transition-shadow duration-300 hover:shadow-xl rounded-2xl">
+            {/* Enquiry */}
+            <aside className="pd-aside">
+              <div id="enquiry" className="pd-enquiry">
                 <p className="eyebrow">Private viewing</p>
-                <h2 className="serif text-3xl mt-2 text-[#112239]">
-                  Enquire about this property
-                </h2>
-                <p className="text-sm text-[#657080] mt-3 leading-6">
-                  Speak with our property advisor to arrange a confidential private viewing.
+                <h2 className="pd-enquiry__title">Request a private viewing</h2>
+                <p className="pd-enquiry__copy">
+                  Share a few details and a member of our advisory team will be in touch to arrange a
+                  confidential viewing of {p.name}.
                 </p>
-                <PropertyEnquiryForm propertyName={p.name} advisorName="Maya Rahman" />
-
-                <div className="rule my-6" />
-
-                <p className="text-xs text-[#657080] uppercase tracking-wider">Your advisor</p>
-                <p className="serif text-2xl mt-1 text-[#112239]">Maya Rahman</p>
-                <p className="text-sm text-[#657080] mt-0.5">Senior Property Advisor</p>
+                <PropertyEnquiryForm propertyName={p.name} />
+                <div className="pd-enquiry__foot">
+                  <Link href="/properties" className="btn-link">
+                    <ArrowLeft size={12} strokeWidth={1.75} aria-hidden="true" />
+                    <span>Back to Collection</span>
+                  </Link>
+                </div>
               </div>
             </aside>
           </div>
         </section>
 
-        {/* Related properties */}
-        <section className="bg-[#ece9e1] section !py-10 sm:!py-16 border-t border-[#ded9ce]">
-          <div className="shell">
-            <ScrollReveal>
-              <p className="eyebrow">Continue exploring</p>
-              <h2 className="text-2xl sm:text-3xl md:text-4xl mt-2 mb-6 sm:mb-8 text-[#112239]">More exceptional spaces</h2>
-            </ScrollReveal>
-            <div className="grid-3">
-              {properties
-                .filter((x) => x.slug !== p.slug)
-                .slice(0, 3)
-                .map((x, idx) => (
-                  <PropertyCard key={x.slug} p={x} index={idx} />
-                ))}
-            </div>
+        {/* Mobile action bar */}
+        <div className="pd-bar" aria-label="Property actions">
+          <div className="pd-bar__price">
+            <span className="pd-bar__label">{p.purpose === 'Rent' ? 'Per year' : 'Price'}</span>
+            <span className="pd-bar__value">{formatAED(p.price)}</span>
           </div>
-        </section>
+          <a href="#enquiry" className="btn btn-sm pd-bar__cta">
+            <span>Request a Private Viewing</span>
+            <ArrowRight size={13} strokeWidth={1.75} aria-hidden="true" />
+          </a>
+        </div>
+
+        {/* Related */}
+        {related.length > 0 && (
+          <section className="pd-related" aria-labelledby="related-heading">
+            <div className="shell">
+              <div className="pd-related__intro">
+                <ScrollReveal>
+                  <p className="eyebrow">Continue exploring</p>
+                  <h2 id="related-heading" className="pd-related__title">
+                    More from the collection.
+                  </h2>
+                </ScrollReveal>
+                <ScrollReveal stagger={1}>
+                  <Link href="/properties" className="btn-link">
+                    <span>View All Properties</span>
+                    <ArrowRight size={13} strokeWidth={1.75} aria-hidden="true" />
+                  </Link>
+                </ScrollReveal>
+              </div>
+              <div className="pd-related__grid">
+                {related.map((x, i) => (
+                  <ScrollReveal key={x.slug} stagger={i + 1}>
+                    <PropertyListingCard p={x} index={i} />
+                  </ScrollReveal>
+                ))}
+              </div>
+            </div>
+          </section>
+        )}
       </main>
       <Footer />
     </>

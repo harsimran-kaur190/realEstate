@@ -1,6 +1,28 @@
 import './globals.css';
 import type { Metadata, Viewport } from 'next';
+import { Cormorant_Garamond, Plus_Jakarta_Sans } from 'next/font/google';
 import { FloatingContactButton } from '@/components/site';
+
+/*
+ * Typography foundation
+ * Both families are self-hosted through next/font (no external requests,
+ * no layout shift). They are exposed as CSS variables and consumed in
+ * globals.css via --font-serif / --font-sans.
+ */
+const serif = Cormorant_Garamond({
+  subsets: ['latin'],
+  weight: ['400', '500', '600'],
+  style: ['normal', 'italic'],
+  display: 'swap',
+  variable: '--font-serif-src',
+});
+
+const sans = Plus_Jakarta_Sans({
+  subsets: ['latin'],
+  weight: ['400', '500', '600'],
+  display: 'swap',
+  variable: '--font-sans-src',
+});
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://altiere-estates.ae'),
@@ -30,7 +52,7 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: '#b39062',
+  themeColor: '#0D1726',
 };
 
 export default function RootLayout({
@@ -39,8 +61,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className="overflow-x-hidden w-full max-w-[100vw]">
-      <body className="overflow-x-hidden w-full max-w-[100vw] min-h-screen min-h-[100dvh] relative flex flex-col bg-[#f8f6f1]">
+    <html lang="en" className={`${serif.variable} ${sans.variable}`}>
+      <body>
         {children}
         <FloatingContactButton />
       </body>
