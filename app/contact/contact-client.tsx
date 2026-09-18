@@ -1,46 +1,35 @@
 'use client';
 
-import { useEffect, useState } from 'react';
-import { createPortal } from 'react-dom';
-import {
-  CheckCircle2,
-  ChevronDown,
-  Mail,
-  MapPin,
-  MessageCircle,
-  Phone,
-  Send,
-  X,
-} from 'lucide-react';
+import { useState } from 'react';
+import { ArrowRight, CheckCircle2 } from 'lucide-react';
 import { Footer, Navbar, ScrollReveal } from '@/components/site';
+
+/*
+ * Contact — a private conversation.
+ *
+ * Editorial split: the introduction runs as a two-column header like the
+ * other interior pages; beneath it the ways to reach the practice read as a
+ * hairline ledger on the left while the enquiry form sits on the right,
+ * un-boxed, with labelled fields. On mobile the ledger follows the form and
+ * the intro carries two quick actions that jump to the form or open WhatsApp.
+ */
+
+const WHATSAPP_HREF =
+  'https://wa.me/97145550182?text=Hello%20Altiere%20Estates,%20I%20would%20like%20to%20enquire%20about%20a%20property.';
+
+const ENQUIRY_TYPES = ['Buying a property', 'Selling a property', 'Leasing', 'Property management'];
 
 export default function ContactClient() {
   const [sent, setSent] = useState(false);
-  const [modalOpen, setModalOpen] = useState(false);
   const [enquiryType, setEnquiryType] = useState('');
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [phone, setPhone] = useState('');
   const [message, setMessage] = useState('');
 
-  // Lock body scroll when mobile modal is open
-  useEffect(() => {
-    if (modalOpen) {
-      document.body.style.overflow = 'hidden';
-    } else {
-      document.body.style.overflow = '';
-    }
-    return () => {
-      document.body.style.overflow = '';
-    };
-  }, [modalOpen]);
-
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setSent(true);
-    if (typeof window !== 'undefined' && window.innerWidth < 768) {
-      setModalOpen(true);
-    }
   };
 
   const handleReset = () => {
@@ -50,271 +39,219 @@ export default function ContactClient() {
     setPhone('');
     setMessage('');
     setEnquiryType('');
-    setModalOpen(false);
   };
-
-  const formFields = (
-    <>
-      <div className="grid md:grid-cols-2 gap-4">
-        <input
-          required
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          className="w-full bg-white border border-[#E8E2D9] h-[48px] px-4 py-3 text-sm text-[#0D1726] placeholder:text-[#7E8896] focus:outline-none focus:border-[#8C7350] focus:ring-1 focus:ring-[#8C7350] transition-colors rounded-[2px]"
-          placeholder="Your name"
-        />
-        <input
-          required
-          type="email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          className="w-full bg-white border border-[#E8E2D9] h-[48px] px-4 py-3 text-sm text-[#0D1726] placeholder:text-[#7E8896] focus:outline-none focus:border-[#8C7350] focus:ring-1 focus:ring-[#8C7350] transition-colors rounded-[2px]"
-          placeholder="Email address"
-        />
-      </div>
-      <input
-        value={phone}
-        onChange={(e) => setPhone(e.target.value)}
-        className="w-full bg-white border border-[#E8E2D9] h-[48px] px-4 py-3 text-sm text-[#0D1726] placeholder:text-[#7E8896] focus:outline-none focus:border-[#8C7350] focus:ring-1 focus:ring-[#8C7350] transition-colors rounded-[2px]"
-        placeholder="Phone number"
-      />
-      <div className="relative">
-        <select
-          className={`w-full appearance-none bg-white border border-[#E8E2D9] h-[48px] px-4 pr-11 py-3 text-sm focus:outline-none focus:border-[#8C7350] focus:ring-1 focus:ring-[#8C7350] transition-colors cursor-pointer rounded-[2px] ${
-            enquiryType ? 'text-[#0D1726]' : 'text-[#7E8896]'
-          }`}
-          value={enquiryType}
-          onChange={(e) => setEnquiryType(e.target.value)}
-        >
-          <option value="" disabled className="text-[#7E8896]">
-            Enquiry type
-          </option>
-          <option value="Buying a property" className="text-[#0D1726]">Buying a property</option>
-          <option value="Selling a property" className="text-[#0D1726]">Selling a property</option>
-          <option value="Leasing" className="text-[#0D1726]">Leasing</option>
-          <option value="Property management" className="text-[#0D1726]">Property management</option>
-        </select>
-        <ChevronDown
-          size={16}
-          className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-[#7E8896]"
-          strokeWidth={1.75}
-        />
-      </div>
-      <textarea
-        required
-        value={message}
-        onChange={(e) => setMessage(e.target.value)}
-        className="w-full bg-white border border-[#E8E2D9] px-4 py-3 text-sm text-[#0D1726] placeholder:text-[#7E8896] focus:outline-none focus:border-[#8C7350] focus:ring-1 focus:ring-[#8C7350] transition-colors h-32 sm:h-36 resize-none rounded-[2px]"
-        placeholder="Tell us a little about your plans"
-      />
-      <button className="btn w-full group mt-2 cursor-pointer" type="submit">
-        <span>Send enquiry</span>
-        <Send size={14} className="transition-transform duration-300 group-hover:translate-x-1" />
-      </button>
-      <p className="text-[11px] text-[#5C6878] text-center">
-        This form is a UI demonstration and does not submit personal data.
-      </p>
-    </>
-  );
 
   return (
     <>
       <Navbar />
       <main>
-        <section className="shell py-12 md:py-20">
-          <div className="grid md:grid-cols-[1fr_1.1fr] gap-10 md:gap-16 items-start">
-            <ScrollReveal>
-              <div>
-                <p className="eyebrow">Start a conversation</p>
-                <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl mt-2 text-[#0D1726] break-words">
-                  Make your next move remarkable.
-                </h1>
-                <p className="text-[#5C6878] leading-7 mt-4 sm:mt-6 max-w-md text-sm sm:text-base">
-                  Whether you are buying, selling, leasing or caring for a property you already own, we would be pleased to hear from you.
+        {/* Introduction */}
+        <section className="ct-intro" aria-labelledby="contact-heading">
+          <div className="shell ct-intro__grid">
+            <div className="ct-intro__lead">
+              <p className="eyebrow animate-hero-reveal">Start a conversation</p>
+              <h1 id="contact-heading" className="ct-intro__title animate-hero-reveal delay-1">
+                Make your next move <em>remarkable.</em>
+              </h1>
+            </div>
+            <div className="ct-intro__aside animate-hero-reveal delay-2">
+              <p className="ct-intro__copy">
+                Whether you are buying, selling, leasing or caring for a property you already own,
+                we would be pleased to hear from you.
+              </p>
+              <div className="ct-intro__actions">
+                <a href="#enquiry" className="btn ct-intro__btn">
+                  <span>Send an enquiry</span>
+                  <ArrowRight size={13} strokeWidth={1.75} aria-hidden="true" />
+                </a>
+                <a
+                  href={WHATSAPP_HREF}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="btn-secondary ct-intro__btn"
+                >
+                  <span>WhatsApp</span>
+                </a>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Ledger + form */}
+        <section className="shell ct-body" aria-label="Contact details and enquiry form">
+          <div className="ct-body__grid">
+            <ScrollReveal className="ct-details">
+              <div className="ct-details__inner">
+                <p className="eyebrow">Reach us</p>
+                <dl className="ct-ledger">
+                  <div className="ct-ledger__row">
+                    <dt>Visit</dt>
+                    <dd>
+                      Al Saqr Business Tower
+                      <br />
+                      Sheikh Zayed Road, Dubai
+                    </dd>
+                  </div>
+                  <div className="ct-ledger__row">
+                    <dt>Call</dt>
+                    <dd>
+                      <a href="tel:+97145550182" className="ct-ledger__link">
+                        +971 4 555 0182
+                      </a>
+                    </dd>
+                  </div>
+                  <div className="ct-ledger__row">
+                    <dt>Email</dt>
+                    <dd>
+                      <a href="mailto:hello@altiere-estates.ae" className="ct-ledger__link">
+                        hello@altiere-estates.ae
+                      </a>
+                    </dd>
+                  </div>
+                  <div className="ct-ledger__row">
+                    <dt>WhatsApp</dt>
+                    <dd>
+                      <a
+                        href={WHATSAPP_HREF}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="ct-ledger__link"
+                      >
+                        Message the advisory team
+                      </a>
+                    </dd>
+                  </div>
+                </dl>
+                <p className="ct-details__note">
+                  Every conversation is handled privately and at your pace.
                 </p>
-
-                {/* Mobile Fast-Action Buttons (No Scrolling Needed) */}
-                <div className="md:hidden mt-6 flex flex-col sm:flex-row gap-3">
-                  <button
-                    type="button"
-                    onClick={() => setModalOpen(true)}
-                    className="btn !py-3.5 !px-6 text-xs uppercase tracking-[0.14em] flex items-center justify-center gap-2 cursor-pointer w-full"
-                  >
-                    <Send size={14} className="text-[#8C7350]" />
-                    <span>Send an enquiry</span>
-                  </button>
-                  <a
-                    href="https://wa.me/97145550182?text=Hello%20Altiere%20Estates,%20I%20would%20like%20to%20enquire%20about%20a%20property."
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center justify-center gap-2.5 px-6 py-3.5 bg-white border border-[#E8E2D9] hover:border-[#8C7350] hover:bg-[#faf8f5] text-[#0D1726] text-xs uppercase tracking-[0.14em] font-semibold transition-all duration-200 group cursor-pointer w-full rounded-[2px]"
-                  >
-                    <MessageCircle size={16} className="text-[#25D366] transition-transform duration-300 group-hover:scale-110" />
-                    <span>WhatsApp us</span>
-                  </a>
-                </div>
-
-                <div className="mt-8 sm:mt-12 space-y-7 sm:space-y-10">
-                  {[
-                    [MapPin, 'Visit us', 'Al Saqr Business Tower, Sheikh Zayed Road, Dubai', null],
-                    [Phone, 'Call us', '+971 4 555 0182', 'tel:+97145550182'],
-                    [Mail, 'Email us', 'hello@altiere-estates.ae', 'mailto:hello@altiere-estates.ae'],
-                  ].map(([Icon, t, d, href]) => {
-                    const I = Icon as typeof MapPin;
-                    return (
-                      <div className="flex gap-4" key={String(t)}>
-                        <I size={20} strokeWidth={1.5} className="text-[#8C7350] shrink-0 mt-0.5" aria-hidden="true" />
-                        <div>
-                          <p className="text-[10.5px] uppercase tracking-[.18em] text-[#7E8896] font-medium">
-                            {String(t)}
-                          </p>
-                          {href ? (
-                            <a href={String(href)} className="block text-sm text-[#0D1726] mt-1 hover:text-[#8C7350] transition-colors">
-                              {String(d)}
-                            </a>
-                          ) : (
-                            <p className="text-sm text-[#0D1726] mt-1">{String(d)}</p>
-                          )}
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
-
-                {/* Desktop WhatsApp Action */}
-                <div className="hidden md:block mt-8 sm:mt-12">
-                  <a
-                    href="https://wa.me/97145550182?text=Hello%20Altiere%20Estates,%20I%20would%20like%20to%20enquire%20about%20a%20property."
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center justify-center gap-2.5 px-6 py-3.5 bg-white border border-[#E8E2D9] hover:border-[#8C7350] hover:bg-[#faf8f5] text-[#0D1726] text-xs uppercase tracking-[0.14em] font-semibold transition-all duration-200 group cursor-pointer rounded-[2px]"
-                  >
-                    <MessageCircle size={16} className="text-[#25D366] transition-transform duration-300 group-hover:scale-110" />
-                    <span>WhatsApp us</span>
-                  </a>
-                </div>
               </div>
             </ScrollReveal>
 
-            {/* Desktop / Inline Form Card */}
-            <ScrollReveal stagger={2}>
-              <div className="bg-white border border-[#E8E2D9] p-6 sm:p-7 md:p-10 ">
-                <h2 className="serif text-3xl text-[#0D1726]">How can we help?</h2>
+            <ScrollReveal stagger={1} className="ct-form">
+              <div id="enquiry" className="ct-form__inner">
+                <p className="eyebrow">Enquiry</p>
+                <h2 className="ct-form__title">How can we help?</h2>
+
                 {sent ? (
-                  <div className="py-12 sm:py-20 text-center animate-fade-in">
-                    <div className="w-16 h-16 rounded-full bg-[#8C7350]/10 text-[#8C7350] grid place-items-center mx-auto mb-4">
-                      <CheckCircle2 size={36} />
-                    </div>
-                    <p className="serif text-3xl text-[#0D1726]" role="status">Thank you.</p>
-                    <p className="text-[#5C6878] mt-2 max-w-sm mx-auto text-sm leading-relaxed">
-                      Your enquiry has been received. A member of our advisory team will be in touch shortly.
+                  <div className="form-success" role="status">
+                    <span className="form-success__icon" aria-hidden="true">
+                      <CheckCircle2 size={22} strokeWidth={1.5} />
+                    </span>
+                    <p className="form-success__eyebrow">Enquiry received</p>
+                    <h3 className="form-success__title">
+                      Thank you{name.trim() ? `, ${name.trim().split(' ')[0]}` : ''}.
+                    </h3>
+                    <p className="form-success__copy">
+                      Your enquiry has been received. A member of our advisory team will be in
+                      touch shortly.
                     </p>
-                    <button
-                      type="button"
-                      onClick={handleReset}
-                      className="btn !py-2.5 !px-5 text-xs mt-6 cursor-pointer"
-                    >
-                      Send another enquiry
+                    <button type="button" onClick={handleReset} className="btn-secondary form-success__action">
+                      <span>Send another enquiry</span>
                     </button>
                   </div>
                 ) : (
-                  <form className="mt-7 grid gap-4" onSubmit={handleSubmit}>
-                    {formFields}
+                  <form className="form" onSubmit={handleSubmit}>
+                    <div className="form__row">
+                      <div className="form__field">
+                        <label htmlFor="contact-name" className="form__label">
+                          Name
+                        </label>
+                        <input
+                          id="contact-name"
+                          required
+                          autoComplete="name"
+                          value={name}
+                          onChange={(e) => setName(e.target.value)}
+                          className="field"
+                          placeholder="Your name"
+                        />
+                      </div>
+                      <div className="form__field">
+                        <label htmlFor="contact-email" className="form__label">
+                          Email
+                        </label>
+                        <input
+                          id="contact-email"
+                          required
+                          type="email"
+                          autoComplete="email"
+                          value={email}
+                          onChange={(e) => setEmail(e.target.value)}
+                          className="field"
+                          placeholder="Email address"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="form__row">
+                      <div className="form__field">
+                        <label htmlFor="contact-phone" className="form__label">
+                          Phone <span className="form__optional">Optional</span>
+                        </label>
+                        <input
+                          id="contact-phone"
+                          type="tel"
+                          autoComplete="tel"
+                          value={phone}
+                          onChange={(e) => setPhone(e.target.value)}
+                          className="field"
+                          placeholder="Phone number"
+                        />
+                      </div>
+                      <div className="form__field">
+                        <label htmlFor="contact-type" className="form__label">
+                          Enquiry type
+                        </label>
+                        <span className="form__select">
+                          <select
+                            id="contact-type"
+                            className={`field ${enquiryType ? '' : 'field--placeholder'}`}
+                            value={enquiryType}
+                            onChange={(e) => setEnquiryType(e.target.value)}
+                          >
+                            <option value="">Select an enquiry type</option>
+                            {ENQUIRY_TYPES.map((t) => (
+                              <option key={t} value={t}>
+                                {t}
+                              </option>
+                            ))}
+                          </select>
+                        </span>
+                      </div>
+                    </div>
+
+                    <div className="form__field">
+                      <label htmlFor="contact-message" className="form__label">
+                        Message
+                      </label>
+                      <textarea
+                        id="contact-message"
+                        required
+                        value={message}
+                        onChange={(e) => setMessage(e.target.value)}
+                        className="field field--area"
+                        placeholder="Tell us a little about your plans"
+                      />
+                    </div>
+
+                    <div className="form__foot">
+                      <button className="btn form__submit" type="submit">
+                        <span>Send enquiry</span>
+                        <ArrowRight size={13} strokeWidth={1.75} aria-hidden="true" />
+                      </button>
+                      <p className="form__note">
+                        This form is a UI demonstration and does not submit personal data.
+                      </p>
+                    </div>
                   </form>
                 )}
               </div>
             </ScrollReveal>
           </div>
         </section>
-
-        {/* Sticky Mobile Quick Action Bar (Bottom Pill) */}
-        <div className="fixed bottom-5 left-1/2 -translate-x-1/2 z-40 md:hidden flex items-center gap-2 bg-[#0D1726]/95 backdrop-blur-md text-white px-3.5 py-2 rounded-full shadow-2xl border border-white/15 max-w-[calc(100vw-2rem)] animate-fade-in">
-          <button
-            type="button"
-            onClick={() => setModalOpen(true)}
-            className="flex items-center gap-2 px-3 py-1 text-xs uppercase tracking-[0.14em] font-semibold text-white hover:text-[#D6B98F] transition-colors cursor-pointer"
-          >
-            <Send size={13} className="text-[#8C7350]" />
-            <span>Enquire now</span>
-          </button>
-          <span className="w-px h-4 bg-white/20" />
-          <a
-            href="https://wa.me/97145550182?text=Hello%20Altiere%20Estates"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex items-center gap-1.5 px-3 py-1 text-xs uppercase tracking-[0.14em] font-semibold text-white/90 hover:text-white transition-colors"
-          >
-            <MessageCircle size={14} className="text-[#25D366]" />
-            <span>WhatsApp</span>
-          </a>
-        </div>
-
-        {/* Mobile Slide-Up Modal Bottom Sheet */}
-        {modalOpen &&
-          typeof document !== 'undefined' &&
-          createPortal(
-            <div
-              className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-end sm:items-center justify-center p-0 sm:p-4 overflow-y-auto animate-fade-in"
-              onClick={() => setModalOpen(false)}
-            >
-              <div
-                className="bg-white w-full sm:max-w-lg  p-6 sm:p-8 border-t sm:border border-[#E8E2D9] shadow-2xl relative max-h-[92vh] overflow-y-auto animate-fade-in"
-                onClick={(e) => e.stopPropagation()}
-              >
-                {/* Close Button */}
-                <button
-                  type="button"
-                  onClick={() => setModalOpen(false)}
-                  className="absolute right-4 top-4 text-stone-400 hover:text-stone-700 p-2 rounded-full hover:bg-stone-100 transition-colors cursor-pointer"
-                  aria-label="Close modal"
-                >
-                  <X size={20} />
-                </button>
-
-                {sent ? (
-                  <div className="py-10 text-center animate-fade-in">
-                    <div className="w-16 h-16 rounded-full bg-[#8C7350]/10 text-[#8C7350] grid place-items-center mx-auto mb-4">
-                      <CheckCircle2 size={36} />
-                    </div>
-                    <h3 className="serif text-3xl text-[#0D1726]">Thank you.</h3>
-                    <p className="text-[#5C6878] mt-2 text-sm leading-relaxed max-w-xs mx-auto">
-                      Your enquiry has been received. A member of our advisory team will be in touch shortly.
-                    </p>
-                    <div className="mt-6 flex justify-center gap-3">
-                      <button
-                        type="button"
-                        onClick={handleReset}
-                        className="btn !py-2.5 !px-6 text-xs cursor-pointer"
-                      >
-                        Done
-                      </button>
-                    </div>
-                  </div>
-                ) : (
-                  <div>
-                    <div className="flex items-center gap-2 mb-1.5 text-[#8C7350]">
-                      <span className="w-1.5 h-1.5 rounded-full bg-[#8C7350]" />
-                      <span className="text-[10px] uppercase tracking-[0.2em] font-semibold">Start a conversation</span>
-                    </div>
-                    <h3 className="serif text-2xl sm:text-3xl text-[#0D1726] font-medium">
-                      How can we help?
-                    </h3>
-                    <p className="text-xs text-stone-500 mt-1 mb-5">
-                      Send a confidential enquiry directly to our private client advisory team.
-                    </p>
-
-                    <form className="grid gap-3.5" onSubmit={handleSubmit}>
-                      {formFields}
-                    </form>
-                  </div>
-                )}
-              </div>
-            </div>,
-            document.body
-          )}
       </main>
       <Footer />
     </>
   );
 }
-

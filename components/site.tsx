@@ -495,8 +495,15 @@ export function ScrollReveal({
 export function FloatingContactButton() {
   const pathname = usePathname();
 
-  // Hide on contact page
-  if (pathname === '/contact' || pathname?.startsWith('/contact/')) {
+  // Hidden where the page already carries its own primary contact action:
+  // the contact page itself, and the property routes whose fixed bottom
+  // bars (filter dock, viewing bar) would otherwise overlap this button.
+  if (
+    pathname === '/contact' ||
+    pathname?.startsWith('/contact/') ||
+    pathname === '/properties' ||
+    pathname?.startsWith('/properties/')
+  ) {
     return null;
   }
 
@@ -513,25 +520,14 @@ export function PropertyEnquiryForm({
 }: {
   propertyName: string;
 }) {
-  const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    phone: '',
-    message: '',
-  });
+  type FieldKey = 'name' | 'email' | 'phone' | 'message';
 
-  const [touched, setTouched] = useState({
-    name: false,
-    email: false,
-    phone: false,
-    message: false,
-  });
-
+  const [formData, setFormData] = useState({ name: '', email: '', phone: '', message: '' });
+  const [touched, setTouched] = useState({ name: false, email: false, phone: false, message: false });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
 
-  // Field-specific validation
-  const validateField = (field: 'name' | 'email' | 'phone' | 'message', val: string) => {
+  const validateField = (field: FieldKey, val: string) => {
     const trimmed = val.trim();
     if (field === 'name') {
       if (!trimmed) return 'Please enter your name';
@@ -540,14 +536,12 @@ export function PropertyEnquiryForm({
     }
     if (field === 'email') {
       if (!trimmed) return 'Please enter your email address';
-      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-      if (!emailRegex.test(trimmed)) return 'Please enter a valid email address';
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmed)) return 'Please enter a valid email address';
       return '';
     }
     if (field === 'phone') {
       if (!trimmed) return 'Please enter your phone number';
-      const digitsOnly = trimmed.replace(/\D/g, '');
-      if (digitsOnly.length < 7) return 'Please enter a valid phone number (at least 7 digits)';
+      if (trimmed.replace(/\D/g, '').length < 7) return 'Please enter a valid phone number';
       return '';
     }
     return '';
@@ -562,29 +556,17 @@ export function PropertyEnquiryForm({
 
   const hasErrors = Boolean(errors.name || errors.email || errors.phone);
 
-  const handleBlur = (field: 'name' | 'email' | 'phone' | 'message') => {
-    setTouched((prev) => ({ ...prev, [field]: true }));
-  };
-
-  const handleChange = (field: 'name' | 'email' | 'phone' | 'message', value: string) => {
+  const handleBlur = (field: FieldKey) => setTouched((prev) => ({ ...prev, [field]: true }));
+  const handleChange = (field: FieldKey, value: string) =>
     setFormData((prev) => ({ ...prev, [field]: value }));
-  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    setTouched({
-      name: true,
-      email: true,
-      phone: true,
-      message: true,
-    });
+    setTouched({ name: true, email: true, phone: true, message: true });
 
     if (hasErrors) {
       const firstInvalidKey = (['name', 'email', 'phone'] as const).find((k) => errors[k]);
-      if (firstInvalidKey) {
-        const el = document.getElementById(`enquiry-${firstInvalidKey}`);
-        el?.focus();
-      }
+      if (firstInvalidKey) document.getElementById(`enquiry-${firstInvalidKey}`)?.focus();
       return;
     }
 
@@ -603,178 +585,105 @@ export function PropertyEnquiryForm({
 
   if (isSubmitted) {
     return (
-      <div className="py-6 animate-fade-in">
-        <div className="w-12 h-12 rounded-full bg-[#b39062]/15 text-[#b39062] flex items-center justify-center mx-auto mb-4">
-          <CheckCircle2 size={26} />
-        </div>
-        <div className="text-center">
-          <span className="text-[10px] tracking-[0.2em] uppercase font-semibold text-[#b39062]">
-            Viewing Request Received
-          </span>
-          <h3 className="serif text-2xl mt-1 text-[#112239] font-medium">
-            Thank you, {formData.name.trim().split(' ')[0]}
-          </h3>
-          <p className="text-xs text-[#657080] mt-2 leading-relaxed">
-            Our advisory team has received your viewing request for{' '}
-            <strong className="text-[#112239] font-medium">{propertyName}</strong>.
-          </p>
-        </div>
-
-        <div className="mt-5 p-3.5 bg-[#FAF8F5] border border-[#E8E2D9] text-left text-xs text-stone-600 space-y-1.5">
-          <div className="flex justify-between">
-            <span className="text-stone-400 uppercase text-[10px] tracking-wider">Contact</span>
-            <span className="font-medium text-[#112239]">{formData.phone}</span>
+      <div className="form-success form-success--compact" role="status">
+        <span className="form-success__icon" aria-hidden="true">
+          <CheckCircle2 size={22} strokeWidth={1.5} />
+        </span>
+        <p className="form-success__eyebrow">Viewing request received</p>
+        <h3 className="form-success__title">Thank you, {formData.name.trim().split(' ')[0]}</h3>
+        <p className="form-success__copy">
+          Our advisory team has received your viewing request for{' '}
+          <strong>{propertyName}</strong>.
+        </p>
+        <dl className="form-success__meta">
+          <div>
+            <dt>Contact</dt>
+            <dd>{formData.phone}</dd>
           </div>
-          <div className="flex justify-between">
-            <span className="text-stone-400 uppercase text-[10px] tracking-wider">Email</span>
-            <span className="font-medium text-[#112239]">{formData.email}</span>
+          <div>
+            <dt>Email</dt>
+            <dd>{formData.email}</dd>
           </div>
-        </div>
-
-        <button
-          type="button"
-          onClick={handleReset}
-          className="mt-5 w-full py-2.5 text-xs uppercase tracking-widest font-semibold text-stone-600 hover:text-[#112239] border border-[#DCD5C9] hover:border-[#0D1726] transition-colors cursor-pointer"
-        >
-          Submit another enquiry
+        </dl>
+        <button type="button" onClick={handleReset} className="btn-secondary btn-block form-success__action">
+          <span>Submit another enquiry</span>
         </button>
       </div>
     );
   }
 
+  const textField = (
+    field: 'name' | 'email' | 'phone',
+    label: string,
+    type: string,
+    autoComplete: string,
+    placeholder: string
+  ) => {
+    const showError = touched[field] && Boolean(errors[field]);
+    const showValid = touched[field] && !errors[field] && formData[field].trim() !== '';
+    return (
+      <div className="form__field">
+        <label htmlFor={`enquiry-${field}`} className="form__label">
+          {label}
+        </label>
+        <span className="form__control">
+          <input
+            id={`enquiry-${field}`}
+            type={type}
+            autoComplete={autoComplete}
+            value={formData[field]}
+            onChange={(e) => handleChange(field, e.target.value)}
+            onBlur={() => handleBlur(field)}
+            aria-invalid={showError}
+            aria-describedby={showError ? `enquiry-${field}-error` : undefined}
+            placeholder={placeholder}
+            className={`field ${showError ? 'field--invalid' : ''} ${showValid ? 'field--valid' : ''}`}
+          />
+          {showValid && (
+            <span className="form__check" aria-hidden="true">
+              <Check size={14} strokeWidth={2} />
+            </span>
+          )}
+        </span>
+        {showError && (
+          <p id={`enquiry-${field}-error`} className="form__error" role="alert">
+            <AlertCircle size={12} aria-hidden="true" />
+            <span>{errors[field]}</span>
+          </p>
+        )}
+      </div>
+    );
+  };
+
   return (
-    <form onSubmit={handleSubmit} noValidate className="mt-6 flex flex-col gap-3">
-      {/* Name Field */}
-      <div>
-        <div className="relative">
-          <input
-            id="enquiry-name"
-            type="text"
-            autoComplete="name"
-            value={formData.name}
-            onChange={(e) => handleChange('name', e.target.value)}
-            onBlur={() => handleBlur('name')}
-            aria-invalid={touched.name && !!errors.name}
-            aria-describedby={touched.name && errors.name ? 'enquiry-name-error' : undefined}
-            placeholder="Your name"
-            className={`field text-sm transition-all duration-200 ${
-              touched.name && errors.name
-                ? '!border-rose-400 !bg-rose-50/20 focus:!border-rose-500 focus:!ring-1 focus:!ring-rose-500'
-                : touched.name && !errors.name && formData.name.trim()
-                ? '!border-emerald-400/80 pr-9'
-                : ''
-            }`}
-          />
-          {touched.name && !errors.name && formData.name.trim() && (
-            <span className="absolute right-3.5 top-1/2 -translate-y-1/2 text-emerald-600 pointer-events-none">
-              <Check size={14} />
-            </span>
-          )}
-        </div>
-        {touched.name && errors.name && (
-          <p id="enquiry-name-error" className="text-[11px] text-rose-600 font-medium flex items-center gap-1 mt-1 pl-1" role="alert">
-            <AlertCircle size={12} className="shrink-0" />
-            <span>{errors.name}</span>
-          </p>
-        )}
-      </div>
+    <form onSubmit={handleSubmit} noValidate className="form form--compact">
+      {textField('name', 'Name', 'text', 'name', 'Your name')}
+      {textField('email', 'Email', 'email', 'email', 'Email address')}
+      {textField('phone', 'Phone', 'tel', 'tel', 'Phone number')}
 
-      {/* Email Field */}
-      <div>
-        <div className="relative">
-          <input
-            id="enquiry-email"
-            type="email"
-            autoComplete="email"
-            value={formData.email}
-            onChange={(e) => handleChange('email', e.target.value)}
-            onBlur={() => handleBlur('email')}
-            aria-invalid={touched.email && !!errors.email}
-            aria-describedby={touched.email && errors.email ? 'enquiry-email-error' : undefined}
-            placeholder="Email address"
-            className={`field text-sm transition-all duration-200 ${
-              touched.email && errors.email
-                ? '!border-rose-400 !bg-rose-50/20 focus:!border-rose-500 focus:!ring-1 focus:!ring-rose-500'
-                : touched.email && !errors.email && formData.email.trim()
-                ? '!border-emerald-400/80 pr-9'
-                : ''
-            }`}
-          />
-          {touched.email && !errors.email && formData.email.trim() && (
-            <span className="absolute right-3.5 top-1/2 -translate-y-1/2 text-emerald-600 pointer-events-none">
-              <Check size={14} />
-            </span>
-          )}
-        </div>
-        {touched.email && errors.email && (
-          <p id="enquiry-email-error" className="text-[11px] text-rose-600 font-medium flex items-center gap-1 mt-1 pl-1" role="alert">
-            <AlertCircle size={12} className="shrink-0" />
-            <span>{errors.email}</span>
-          </p>
-        )}
-      </div>
-
-      {/* Phone Field */}
-      <div>
-        <div className="relative">
-          <input
-            id="enquiry-phone"
-            type="tel"
-            autoComplete="tel"
-            value={formData.phone}
-            onChange={(e) => handleChange('phone', e.target.value)}
-            onBlur={() => handleBlur('phone')}
-            aria-invalid={touched.phone && !!errors.phone}
-            aria-describedby={touched.phone && errors.phone ? 'enquiry-phone-error' : undefined}
-            placeholder="Phone number"
-            className={`field text-sm transition-all duration-200 ${
-              touched.phone && errors.phone
-                ? '!border-rose-400 !bg-rose-50/20 focus:!border-rose-500 focus:!ring-1 focus:!ring-rose-500'
-                : touched.phone && !errors.phone && formData.phone.trim()
-                ? '!border-emerald-400/80 pr-9'
-                : ''
-            }`}
-          />
-          {touched.phone && !errors.phone && formData.phone.trim() && (
-            <span className="absolute right-3.5 top-1/2 -translate-y-1/2 text-emerald-600 pointer-events-none">
-              <Check size={14} />
-            </span>
-          )}
-        </div>
-        {touched.phone && errors.phone && (
-          <p id="enquiry-phone-error" className="text-[11px] text-rose-600 font-medium flex items-center gap-1 mt-1 pl-1" role="alert">
-            <AlertCircle size={12} className="shrink-0" />
-            <span>{errors.phone}</span>
-          </p>
-        )}
-      </div>
-
-      {/* Message Field */}
-      <div>
+      <div className="form__field">
+        <label htmlFor="enquiry-message" className="form__label">
+          Message <span className="form__optional">Optional</span>
+        </label>
         <textarea
           id="enquiry-message"
           value={formData.message}
           onChange={(e) => handleChange('message', e.target.value)}
           placeholder="Tell us what you’re looking for"
-          className="field h-24 resize-none text-sm transition-all duration-200"
+          className="field field--area field--area-sm"
         />
       </div>
 
-      {/* Submit Button */}
-      <button
-        type="submit"
-        disabled={isSubmitting}
-        className="btn group mt-1 cursor-pointer w-full flex items-center justify-center gap-2 transition-all disabled:opacity-75 disabled:cursor-not-allowed"
-      >
+      <button type="submit" disabled={isSubmitting} className="btn btn-block form__submit" aria-busy={isSubmitting}>
         {isSubmitting ? (
           <>
-            <Loader2 size={15} className="animate-spin text-[#b39062]" />
-            <span>Requesting viewing...</span>
+            <Loader2 size={15} className="form__spinner" aria-hidden="true" />
+            <span>Requesting viewing…</span>
           </>
         ) : (
           <>
             <span>Request a viewing</span>
-            <CalendarDays size={15} className="transition-transform duration-200 group-hover:scale-110" />
+            <CalendarDays size={14} strokeWidth={1.75} aria-hidden="true" />
           </>
         )}
       </button>

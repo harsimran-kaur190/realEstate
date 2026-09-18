@@ -63,7 +63,7 @@ export function PropertyDossierGallery({ images, title }: { images: string[]; ti
   const counter = `${String(active + 1).padStart(2, '0')} / ${String(count).padStart(2, '0')}`;
 
   return (
-    <div className="pd-gallery" aria-roledescription="carousel" aria-label={`${title} gallery`}>
+    <div className="pd-gallery" role="region" aria-roledescription="carousel" aria-label={`${title} gallery`}>
       <div className="pd-gallery__stage" onTouchStart={onTouchStart} onTouchEnd={onTouchEnd}>
         {images.map((src, i) => (
           <div
