@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import Image from 'next/image';
+import { blurProps } from '@/lib/photos';
 import { ArrowRight } from 'lucide-react';
 import { Footer, Navbar, ScrollReveal } from '@/components/site';
 
@@ -44,7 +45,7 @@ const SERVICES = [
     title: 'Property Advisory',
     copy: 'Clear guidance through evaluation, negotiation and acquisition.',
     includes: ['Market context and comparables', 'Structured evaluation of each option', 'Support through to completion'],
-    image: 'https://images.unsplash.com/photo-1615747476328-41153cf6da54?auto=format&fit=crop&w=1400&q=80',
+    image: '/images/unsplash/photo-1615747476328-41153cf6da54.jpg',
     alt: 'Sculptural white arches at Dubai Creek Harbour framing the Downtown skyline',
     ratio: 'portrait',
   },
@@ -53,7 +54,7 @@ const SERVICES = [
     title: 'Property Management',
     copy: 'Ongoing oversight for owners who value consistency and peace of mind.',
     includes: ['Proactive maintenance coordination', 'Tenant relations and occupancy oversight', 'Straightforward owner reporting'],
-    image: 'https://images.unsplash.com/photo-1600585154526-990dced4db0d?auto=format&fit=crop&w=1400&q=80',
+    image: '/images/unsplash/photo-1600585154526-990dced4db0d.jpg',
     alt: 'A contemporary residence at dusk with a lit timber entrance and dark cladding',
     ratio: 'tall',
   },
@@ -62,7 +63,7 @@ const SERVICES = [
     title: 'Leasing & Commercial',
     copy: 'Tailored leasing for residences, and considered representation for workspaces and commercial addresses.',
     includes: ['Tenant screening and lease administration', 'Office and retail advisory', 'Corporate portfolio representation'],
-    image: 'https://images.unsplash.com/photo-1497366811353-6870744d04b2?auto=format&fit=crop&w=1400&q=80',
+    image: '/images/unsplash/photo-1497366811353-6870744d04b2.jpg',
     alt: 'A light-filled meeting room with a long timber table and floor-to-ceiling glazing',
     ratio: 'wide',
   },
@@ -71,7 +72,7 @@ const SERVICES = [
     title: 'Asset Support',
     copy: 'Market context and considered analysis to inform acquisition and ownership decisions, without promises about outcomes.',
     includes: ['Area and market briefings', 'Confidential acquisition support', 'Portfolio review on request'],
-    image: 'https://images.unsplash.com/photo-1611577810610-642f8ac05c32?auto=format&fit=crop&w=1400&q=80',
+    image: '/images/unsplash/photo-1611577810610-642f8ac05c32.jpg',
     alt: 'Dubai Marina towers seen from the water in late afternoon light',
     ratio: 'portrait',
   },
@@ -150,6 +151,7 @@ export default function Services() {
                   <div className="sv-item__frame">
                     <Image
                       src={s.image}
+                      {...blurProps(s.image)}
                       alt={s.alt}
                       fill
                       sizes="(min-width: 1024px) 46vw, 100vw"

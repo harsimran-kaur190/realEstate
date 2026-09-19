@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import Image from 'next/image';
+import { blurProps } from '@/lib/photos';
 import { ArrowRight } from 'lucide-react';
 import { ScrollReveal } from '@/components/site';
 
@@ -12,7 +13,7 @@ import { ScrollReveal } from '@/components/site';
  */
 
 const STEWARDSHIP_PHOTO =
-  'https://images.unsplash.com/photo-1600585154526-990dced4db0d?auto=format&fit=crop&w=1600&q=80';
+  '/images/unsplash/photo-1600585154526-990dced4db0d.jpg';
 
 const AREAS = [
   {
@@ -65,6 +66,7 @@ export function PropertyStewardship() {
             <div className="pm__image">
               <Image
                 src={STEWARDSHIP_PHOTO}
+                {...blurProps(STEWARDSHIP_PHOTO)}
                 alt="A contemporary residence at dusk with a lit timber entrance and dark cladding"
                 fill
                 sizes="(min-width: 1024px) 40vw, 100vw"

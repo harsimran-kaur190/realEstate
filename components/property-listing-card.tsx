@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import Image from 'next/image';
+import { blurProps } from '@/lib/photos';
 import { ArrowRight } from 'lucide-react';
 import { formatAED, type Property } from '@/lib/properties';
 import { FavouriteButton } from '@/components/favourite-button';
@@ -28,6 +29,7 @@ export function PropertyListingCard({
         <Link href={href} className="pl-card__media-link" aria-label={`View ${p.name}`} tabIndex={-1}>
           <Image
             src={p.image}
+            {...blurProps(p.image)}
             alt={alt}
             fill
             sizes="(min-width: 1024px) 50vw, 100vw"

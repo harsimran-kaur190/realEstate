@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import Image from 'next/image';
+import { blurProps } from '@/lib/photos';
 import { ArrowRight } from 'lucide-react';
 import { ScrollReveal } from '@/components/site';
 
@@ -13,13 +14,13 @@ import { ScrollReveal } from '@/components/site';
  */
 
 const CTA_PHOTO =
-  'https://images.unsplash.com/photo-1526495124232-a04e1849168c?auto=format&fit=crop&w=2000&q=75';
+  '/images/unsplash/photo-1526495124232-a04e1849168c.jpg';
 
 export function FinalCta() {
   return (
     <section className="cta on-dark" aria-labelledby="cta-heading">
       <div className="cta__backdrop" aria-hidden="true">
-        <Image src={CTA_PHOTO} alt="" fill sizes="100vw" className="cta__img" />
+        <Image src={CTA_PHOTO} alt="" fill sizes="100vw" quality={65} className="cta__img" {...blurProps(CTA_PHOTO)} />
         <span className="cta__scrim" />
       </div>
 

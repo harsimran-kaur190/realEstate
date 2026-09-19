@@ -27,6 +27,7 @@ export function HomeHero() {
           priority
           fetchPriority="high"
           placeholder="blur"
+          quality={65}
           sizes="100vw"
           className="hero__img"
         />

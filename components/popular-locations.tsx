@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import Image from 'next/image';
+import { blurProps, photo } from '@/lib/photos';
 import { ArrowRight } from 'lucide-react';
 import { ScrollReveal } from '@/components/site';
 
@@ -79,7 +80,7 @@ const SIZES = {
 
 function LocationTile({ loc, index }: { loc: Location; index: number }) {
   const featured = index === 0;
-  const src = `https://images.unsplash.com/${loc.photo}?auto=format&fit=crop&w=1600&q=80`;
+  const src = photo(loc.photo);
 
   return (
     <ScrollReveal stagger={(index % 5) + 1} className={`loc-tile loc-tile--${index + 1}`}>
@@ -90,6 +91,7 @@ function LocationTile({ loc, index }: { loc: Location; index: number }) {
       >
         <Image
           src={src}
+          {...blurProps(src)}
           alt={loc.alt}
           fill
           sizes={featured ? SIZES.featured : SIZES.tile}

@@ -1,6 +1,7 @@
 'use client';
 
 import Image from 'next/image';
+import { blurProps } from '@/lib/photos';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { ArrowLeft, ArrowRight, Maximize2, X } from 'lucide-react';
@@ -73,6 +74,7 @@ export function PropertyDossierGallery({ images, title }: { images: string[]; ti
           >
             <Image
               src={src}
+              {...blurProps(src)}
               alt={i === active ? `${title}, view ${i + 1} of ${count}` : ''}
               fill
               sizes="(min-width: 1024px) 1280px, 100vw"
@@ -120,7 +122,7 @@ export function PropertyDossierGallery({ images, title }: { images: string[]; ti
               aria-label={`Show image ${i + 1}`}
               className={`pd-gallery__thumb ${i === active ? 'pd-gallery__thumb--active' : ''}`}
             >
-              <Image src={src} alt="" fill sizes="160px" className="pd-gallery__thumb-img" />
+              <Image src={src} alt="" fill sizes="160px" className="pd-gallery__thumb-img" {...blurProps(src)} />
             </button>
           ))}
         </div>
@@ -155,6 +157,7 @@ export function PropertyDossierGallery({ images, title }: { images: string[]; ti
               <Image
                 key={images[active]}
                 src={images[active]}
+                {...blurProps(images[active])}
                 alt={`${title}, view ${active + 1} of ${count}`}
                 fill
                 sizes="100vw"

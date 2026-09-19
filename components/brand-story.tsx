@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import Image from 'next/image';
+import { blurProps } from '@/lib/photos';
 import { ArrowRight } from 'lucide-react';
 import { ScrollReveal } from '@/components/site';
 
@@ -12,7 +13,7 @@ import { ScrollReveal } from '@/components/site';
  */
 
 const STORY_PHOTO =
-  'https://images.unsplash.com/photo-1615747476205-991a14cd2358?auto=format&fit=crop&w=1600&q=80';
+  '/images/unsplash/photo-1615747476205-991a14cd2358.jpg';
 
 export function BrandStory() {
   return (
@@ -34,6 +35,7 @@ export function BrandStory() {
           <div className="bs__image">
             <Image
               src={STORY_PHOTO}
+              {...blurProps(STORY_PHOTO)}
               alt="A sculptural white pavilion at Dubai Creek Harbour framing the Burj Khalifa and the Downtown skyline"
               fill
               sizes="(min-width: 1024px) 42vw, 100vw"

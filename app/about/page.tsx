@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import Image from 'next/image';
+import { blurProps } from '@/lib/photos';
 import { ArrowRight } from 'lucide-react';
 import { Footer, Navbar, ScrollReveal } from '@/components/site';
 
@@ -58,7 +59,8 @@ export default function About() {
           <ScrollReveal className="ab-mission__media">
             <div className="ab-mission__frame">
               <Image
-                src="https://images.unsplash.com/photo-1615747476328-41153cf6da54?auto=format&fit=crop&w=1400&q=80"
+                src="/images/unsplash/photo-1615747476328-41153cf6da54.jpg"
+                {...blurProps("/images/unsplash/photo-1615747476328-41153cf6da54.jpg")}
                 alt="Sculptural white arches at Dubai Creek Harbour framing the Downtown skyline"
                 fill
                 sizes="(min-width: 1024px) 42vw, 100vw"

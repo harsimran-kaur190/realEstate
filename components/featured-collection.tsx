@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import Image from 'next/image';
+import { blurProps } from '@/lib/photos';
 import { ArrowRight } from 'lucide-react';
 import { properties, formatAED, type Property } from '@/lib/properties';
 import { ScrollReveal } from '@/components/site';
@@ -47,7 +48,7 @@ function LeadProperty({ p }: { p: Property }) {
       <ScrollReveal className="fc-lead__media-wrap">
         <div className="fc-media fc-lead__media">
           <Link href={href} className="fc-media__link" aria-label={`View ${p.name}`} tabIndex={-1}>
-            <Image src={p.image} alt={alt} fill sizes={IMAGE_SIZES.lead} className="fc-media__img" />
+            <Image src={p.image} alt={alt} fill sizes={IMAGE_SIZES.lead} className="fc-media__img" {...blurProps(p.image)} />
           </Link>
           <span className="fc-media__index" aria-hidden="true">01</span>
           <FavouriteButton slug={p.slug} name={p.name} className="fc-media__fav" />
@@ -102,7 +103,7 @@ function SupportProperty({ p, index }: { p: Property; index: number }) {
       <article className="fc-support__inner">
         <div className="fc-media fc-support__media">
           <Link href={href} className="fc-media__link" aria-label={`View ${p.name}`} tabIndex={-1}>
-            <Image src={p.image} alt={alt} fill sizes={IMAGE_SIZES.support} className="fc-media__img" />
+            <Image src={p.image} alt={alt} fill sizes={IMAGE_SIZES.support} className="fc-media__img" {...blurProps(p.image)} />
           </Link>
           <span className="fc-media__index" aria-hidden="true">0{index + 1}</span>
           <FavouriteButton slug={p.slug} name={p.name} className="fc-media__fav" />
