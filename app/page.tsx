@@ -12,7 +12,8 @@ export const metadata: Metadata = {
       'Explore our curated portfolio of luxury villas, penthouses, and private estates across Dubai and the UAE.',
   },
 };
-import { Footer, Navbar, SearchPanel } from '@/components/site';
+import { Footer, Navbar } from '@/components/site';
+import { HomeSearch } from '@/components/home-search';
 import { HomeHero } from '@/components/home-hero';
 import { FeaturedCollection } from '@/components/featured-collection';
 import { PopularLocations } from '@/components/popular-locations';
@@ -29,12 +30,8 @@ export default function Home() {
       <main>
         <HomeHero />
 
-        {/* Refined Search Section */}
-        <section className="search-premium-section">
-          <div className="shell">
-            <SearchPanel />
-          </div>
-        </section>
+        {/* Search dock + in-page results */}
+        <HomeSearch />
 
         <FeaturedCollection />
 

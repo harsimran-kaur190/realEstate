@@ -9,3 +9,78 @@ export const properties:Property[]=[
 {slug:'al-majaz-office',name:'Al Majaz Office Collection',place:'Al Majaz, Sharjah',city:'Sharjah',price:185000,type:'Office',beds:0,baths:2,area:2840,purpose:'Commercial',image:photo('photo-1497366811353-6870744d04b2'),gallery:[photo('photo-1497366811353-6870744d04b2'),photo('photo-1497366216548-37526070297c'),photo('photo-1497366754035-f200968a6e72')],description:'A considered commercial address balancing impressive lake views with flexible, efficient workspace.',amenities:['Fitted office','Lake views','Reception','High-speed lifts','Visitor parking']}
 ];
 export const formatAED=(price:number)=>new Intl.NumberFormat('en-AE',{style:'currency',currency:'AED',maximumFractionDigits:0}).format(price);
+
+/* ----------------------------------------------------------------
+   Filter model — shared by the homepage search dock and the
+   Properties page so both apply identical rules to the same dataset.
+   Price and bedroom matching work on the numeric `price` and `beds`
+   fields; the option labels are presentation only.
+   ---------------------------------------------------------------- */
+
+export type Purpose = Property['purpose'];
+export type PurposeFilter = 'All' | Purpose;
+
+export type PriceRange = { id: string; label: string; min: number; max: number };
+
+export const PRICE_RANGES: PriceRange[] = [
+  { id: 'Under 1m', label: 'Under AED 1m', min: 0, max: 1_000_000 },
+  { id: '1m–5m', label: 'AED 1m – 5m', min: 1_000_000, max: 5_000_000 },
+  { id: '5m+', label: 'AED 5m+', min: 5_000_000, max: Number.POSITIVE_INFINITY },
+];
+
+export const FILTER_OPTIONS = {
+  purposes: ['Buy', 'Rent', 'Commercial'] as Purpose[],
+  cities: ['Dubai', 'Abu Dhabi', 'Sharjah'],
+  types: ['Villa', 'Apartment', 'Office'],
+  prices: PRICE_RANGES.map((r) => r.id),
+  beds: ['2+', '3+', '4+'],
+};
+
+export type PropertyFilters = {
+  purpose: PurposeFilter;
+  /** City name or 'All' */
+  city: string;
+  /** Property type or 'All' */
+  type: string;
+  /** PRICE_RANGES id or 'All' */
+  price: string;
+  /** Minimum bedrooms as "N+" or 'All' */
+  beds: string;
+};
+
+export const DEFAULT_FILTERS: PropertyFilters = {
+  purpose: 'All',
+  city: 'All',
+  type: 'All',
+  price: 'All',
+  beds: 'All',
+};
+
+/** Parse a "3+" style option to its numeric minimum; 'All' → 0. */
+export const minBedsFrom = (beds: string) => {
+  const n = Number.parseInt(beds, 10);
+  return Number.isFinite(n) ? n : 0;
+};
+
+export function matchesPrice(price: number, rangeId: string) {
+  if (rangeId === 'All') return true;
+  const range = PRICE_RANGES.find((r) => r.id === rangeId);
+  if (!range) return true;
+  const upperOk = range.max === Number.POSITIVE_INFINITY ? true : price < range.max;
+  return price >= range.min && upperOk;
+}
+
+export function matchesFilters(p: Property, f: PropertyFilters) {
+  return (
+    (f.purpose === 'All' || p.purpose === f.purpose) &&
+    (f.city === 'All' || p.city === f.city) &&
+    (f.type === 'All' || p.type === f.type) &&
+    matchesPrice(p.price, f.price) &&
+    p.beds >= minBedsFrom(f.beds)
+  );
+}
+
+export const filterProperties = (list: Property[], f: PropertyFilters) => list.filter((p) => matchesFilters(p, f));
+
+export const isDefaultFilters = (f: PropertyFilters) =>
+  (Object.keys(DEFAULT_FILTERS) as (keyof PropertyFilters)[]).every((k) => f[k] === DEFAULT_FILTERS[k]);

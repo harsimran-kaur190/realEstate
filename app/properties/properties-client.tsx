@@ -15,13 +15,13 @@ import {
 } from 'lucide-react';
 import { Footer, Navbar } from '@/components/site';
 import { PropertyListingCard } from '@/components/property-listing-card';
-import { properties } from '@/lib/properties';
+import { FILTER_OPTIONS, matchesFilters, properties, type PurposeFilter } from '@/lib/properties';
 
-const PURPOSES = ['All', 'Buy', 'Rent', 'Commercial'];
-const CITIES = ['All', 'Dubai', 'Abu Dhabi', 'Sharjah'];
-const TYPES = ['All', 'Villa', 'Apartment', 'Office'];
-const PRICES = ['All', 'Under 1m', '1m–5m', '5m+'];
-const BEDS = ['All', '2+', '3+', '4+'];
+const PURPOSES = ['All', ...FILTER_OPTIONS.purposes];
+const CITIES = ['All', ...FILTER_OPTIONS.cities];
+const TYPES = ['All', ...FILTER_OPTIONS.types];
+const PRICES = ['All', ...FILTER_OPTIONS.prices];
+const BEDS = ['All', ...FILTER_OPTIONS.beds];
 const SORTS = ['Featured', 'Price: low to high', 'Price: high to low'];
 
 const quickTags = [
@@ -38,7 +38,7 @@ const quickTags = [
 ];
 
 export default function PropertiesClient() {
-  const [purpose, setPurpose] = useState('All');
+  const [purpose, setPurpose] = useState<PurposeFilter>('All');
   const [city, setCity] = useState('All');
   const [type, setType] = useState('All');
   const [price, setPrice] = useState('All');
@@ -82,7 +82,8 @@ export default function PropertiesClient() {
   // Seed filters from the query string (links from the homepage search + locations)
   useEffect(() => {
     const p = new URLSearchParams(window.location.search);
-    setPurpose(p.get('purpose') || 'All');
+    const purposeParam = p.get('purpose');
+    setPurpose(PURPOSES.includes(purposeParam ?? '') ? (purposeParam as PurposeFilter) : 'All');
     setCity(p.get('city') || 'All');
     setType(p.get('type') || 'All');
     setPrice(p.get('price') || 'All');
@@ -98,22 +99,11 @@ export default function PropertiesClient() {
   const list = useMemo(
     () =>
       properties
-        .filter((p) => {
-          const priceOk =
-            price === 'All' ||
-            (price === 'Under 1m' && p.price < 1000000) ||
-            (price === '1m–5m' && p.price >= 1000000 && p.price <= 5000000) ||
-            (price === '5m+' && p.price > 5000000);
-          const bedOk = beds === 'All' || p.beds >= Number(beds[0]);
-          return (
-            (purpose === 'All' || p.purpose === purpose) &&
-            (city === 'All' || p.city === city) &&
-            (type === 'All' || p.type === type) &&
-            priceOk &&
-            bedOk &&
+        .filter(
+          (p) =>
+            matchesFilters(p, { purpose, city, type, price, beds }) &&
             `${p.name} ${p.place} ${p.type} ${p.description}`.toLowerCase().includes(query.toLowerCase())
-          );
-        })
+        )
         .sort((a, b) =>
           sort === 'Price: low to high'
             ? a.price - b.price
@@ -176,7 +166,7 @@ export default function PropertiesClient() {
       }
       if (tag.type) setType(type === tag.type ? 'All' : tag.type);
       if (tag.city) setCity(city === tag.city ? 'All' : tag.city);
-      if (tag.purpose) setPurpose(purpose === tag.purpose ? 'All' : tag.purpose);
+      if (tag.purpose) setPurpose(purpose === tag.purpose ? 'All' : (tag.purpose as PurposeFilter));
       if (tag.query) setQuery(query.toLowerCase() === tag.query.toLowerCase() ? '' : tag.query);
     });
   };
@@ -221,7 +211,7 @@ export default function PropertiesClient() {
                     key={x}
                     type="button"
                     aria-pressed={purpose === x}
-                    onClick={() => triggerTransition(() => setPurpose(x))}
+                    onClick={() => triggerTransition(() => setPurpose(x as PurposeFilter))}
                     className={`pl-tab ${purpose === x ? 'pl-tab--active' : ''}`}
                   >
                     {x}
@@ -390,7 +380,7 @@ export default function PropertiesClient() {
                 </div>
 
                 <div className="pl-sheet__body">
-                  <SheetGroup label="Purpose" options={PURPOSES} value={purpose} onChange={(v) => triggerTransition(() => setPurpose(v))} columns={4} />
+                  <SheetGroup label="Purpose" options={PURPOSES} value={purpose} onChange={(v) => triggerTransition(() => setPurpose(v as PurposeFilter))} columns={4} />
                   <SheetGroup label="Location" options={CITIES} value={city} onChange={(v) => triggerTransition(() => setCity(v))} allLabel="All locations" />
                   <SheetGroup label="Property type" options={TYPES} value={type} onChange={(v) => triggerTransition(() => setType(v))} allLabel="All types" />
                   <SheetGroup label="Price range" options={PRICES} value={price} onChange={(v) => triggerTransition(() => setPrice(v))} allLabel="Any price" />

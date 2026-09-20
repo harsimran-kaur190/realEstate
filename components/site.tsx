@@ -17,6 +17,7 @@ import {
   Search,
   X,
 } from 'lucide-react';
+import { FILTER_OPTIONS, type PropertyFilters } from '@/lib/properties';
 
 const NAV_ITEMS = [
   { name: 'Properties', href: '/properties' },
@@ -316,38 +317,43 @@ function FooterColumn({ title, items }: { title: string; items: [string, string]
   );
 }
 
-export function SearchPanel() {
-  const [kind, setKind] = useState('Buy');
-  const [city, setCity] = useState('All');
-  const [type, setType] = useState('All');
-  const [price, setPrice] = useState('All');
-  const [beds, setBeds] = useState('All');
+export function SearchPanel({
+  filters,
+  onChange,
+  onSearch,
+  onReset,
+}: {
+  filters: PropertyFilters;
+  onChange: (next: PropertyFilters) => void;
+  onSearch: () => void;
+  onReset: () => void;
+}) {
+  const { purpose, city, type, price, beds } = filters;
+  const set = (patch: Partial<PropertyFilters>) => onChange({ ...filters, ...patch });
 
   const hasActiveFilters =
-    city !== 'All' || type !== 'All' || price !== 'All' || beds !== 'All' || kind !== 'Buy';
-
-  const resetFilters = () => {
-    setKind('Buy');
-    setCity('All');
-    setType('All');
-    setPrice('All');
-    setBeds('All');
-  };
-
-  const qs = new URLSearchParams({ purpose: kind, city, type, price, beds });
+    city !== 'All' || type !== 'All' || price !== 'All' || beds !== 'All' || purpose !== 'All';
 
   return (
-    <div className="search-dock">
+    <form
+      className="search-dock"
+      role="search"
+      aria-label="Search the collection"
+      onSubmit={(e) => {
+        e.preventDefault();
+        onSearch();
+      }}
+    >
       {/* Purpose tabs */}
       <div className="search-dock__head">
         <div className="search-dock__tabs" role="group" aria-label="Purpose">
-          {['Buy', 'Rent', 'Commercial'].map((x) => (
+          {FILTER_OPTIONS.purposes.map((x) => (
             <button
               type="button"
               key={x}
-              aria-pressed={kind === x}
-              onClick={() => setKind(x)}
-              className={`search-dock__tab ${kind === x ? 'search-dock__tab--active' : ''}`}
+              aria-pressed={purpose === x}
+              onClick={() => set({ purpose: purpose === x ? 'All' : x })}
+              className={`search-dock__tab ${purpose === x ? 'search-dock__tab--active' : ''}`}
             >
               {x}
             </button>
@@ -355,7 +361,7 @@ export function SearchPanel() {
         </div>
 
         {hasActiveFilters ? (
-          <button type="button" onClick={resetFilters} className="search-dock__reset" title="Reset all filters">
+          <button type="button" onClick={onReset} className="search-dock__reset" title="Reset all filters">
             <RotateCcw size={12} aria-hidden="true" />
             <span>Reset filters</span>
           </button>
@@ -372,38 +378,38 @@ export function SearchPanel() {
         <SearchField
           label="Location"
           value={city}
-          set={setCity}
-          options={['All', 'Dubai', 'Abu Dhabi', 'Sharjah']}
+          set={(v) => set({ city: v })}
+          options={['All', ...FILTER_OPTIONS.cities]}
           defaultLabel="Any location"
         />
         <SearchField
           label="Property Type"
           value={type}
-          set={setType}
-          options={['All', 'Villa', 'Apartment', 'Office']}
+          set={(v) => set({ type: v })}
+          options={['All', ...FILTER_OPTIONS.types]}
           defaultLabel="Any type"
         />
         <SearchField
           label="Price Range"
           value={price}
-          set={setPrice}
-          options={['All', 'Under 1m', '1m–5m', '5m+']}
+          set={(v) => set({ price: v })}
+          options={['All', ...FILTER_OPTIONS.prices]}
           defaultLabel="Any price"
         />
         <SearchField
           label="Bedrooms"
           value={beds}
-          set={setBeds}
-          options={['All', '2+', '3+', '4+']}
+          set={(v) => set({ beds: v })}
+          options={['All', ...FILTER_OPTIONS.beds]}
           defaultLabel="Any bedrooms"
         />
 
-        <Link href={`/properties?${qs.toString()}`} className="btn search-dock__submit">
+        <button type="submit" className="btn search-dock__submit">
           <Search size={14} strokeWidth={1.75} aria-hidden="true" />
           <span>Search</span>
-        </Link>
+        </button>
       </div>
-    </div>
+    </form>
   );
 }
 
